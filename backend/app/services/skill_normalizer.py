@@ -1,20 +1,24 @@
 import re
-import spacy
-from app.models.skill import SkillAlias
 import logging
 
 logger = logging.getLogger(__name__)
 
+try:
+    import spacy
+    try:
+        nlp = spacy.load("en_core_web_sm")
+    except Exception as e:
+        logger.warning(f"Failed to load spacy model: {e}. Falling back to basic regex.")
+        nlp = None
+except ImportError:
+    spacy = None
+    nlp = None
+
+from app.models.skill import SkillAlias
+
 # Cache aliases to avoid querying DB for every word
-# Maps alias string to skill_id (Integer) to avoid SQLAlchemy detached instance errors!
 _alias_cache = {}
 _initialized = False
-
-try:
-    nlp = spacy.load("en_core_web_sm")
-except Exception as e:
-    logger.warning(f"Failed to load spacy model: {e}. Falling back to basic regex.")
-    nlp = None
 
 def _load_aliases():
     global _alias_cache, _initialized
