@@ -1,0 +1,35 @@
+.job-preview .skill-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-preview .skill-list li {
+    padding: 3px 0;
+    font-weight: 500;
+}
+
+.job-preview .req-list li {
+    color: #28a745;
+}
+
+.job-preview .pref-list li {
+    color: #17a2b8;
+}
+
+.job-preview .meta {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: normal;
+}
+
+.job-preview .resp-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.job-preview .resp-list li {
+    padding: 2px 0;
+    color: #444;
+}

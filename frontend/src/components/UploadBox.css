@@ -1,0 +1,126 @@
+.upload-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.upload-header h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+.dropzone {
+    border: 2px dashed #007bff;
+    border-radius: 4px;
+    padding: 3rem 1rem;
+    cursor: pointer;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    margin: 1.5rem 0;
+}
+
+.dropzone.active {
+    background-color: #e6f2ff;
+    border-color: #0056b3;
+}
+
+.selected-file {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.validation-progress {
+    font-size: 0.85rem;
+    color: #007bff;
+    font-weight: 500;
+    margin: 0.5rem 0;
+    font-style: italic;
+}
+
+.upload-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.upload-btn:hover {
+    background-color: #0056b3;
+}
+
+.upload-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.validation-error-card {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.ve-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.validation-error-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #721c24;
+    font-size: 1rem;
+}
+
+.ve-msg {
+    color: #721c24;
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
+}
+
+.btn-reupload {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.validation-success-chip {
+    display: inline-block;
+    background-color: #d4edda;
+    color: #155724;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    margin-top: 1rem;
+}
+
+.error-message {
+    color: #d9534f;
+    margin-top: 1rem;
+    padding: 10px;
+    background-color: #f2dede;
+    border-radius: 4px;
+}
+
+.success-message {
+    color: #5cb85c;
+    margin-top: 1rem;
+    padding: 10px;
+    background-color: #dff0d8;
+    border-radius: 4px;
+}

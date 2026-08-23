@@ -1,0 +1,12 @@
+flask
+flask-cors
+flask-sqlalchemy
+python-dotenv
+pymupdf
+spacy
+pytest
+werkzeug
+
+sentence-transformers>=2.2.2
+torch>=2.0.0
+scikit-learn

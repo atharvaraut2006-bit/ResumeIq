@@ -1,0 +1,110 @@
+.doc-preview-paper {
+    background-color: #ffffff;
+    width: 100%;
+    min-height: 842px; /* Standard A4 aspect ratio height */
+    padding: 2.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    border: 1px solid #d1d5db;
+    box-sizing: border-box;
+    text-align: left;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    color: #111827;
+}
+
+/* Template Typography & Color Themes */
+.doc-preview-paper.template-ats_focused {
+    font-family: 'Helvetica', 'Arial', sans-serif;
+}
+.doc-preview-paper.template-ats_focused .doc-heading {
+    color: #2563eb;
+    border-bottom: 1.5px solid #2563eb;
+}
+
+.doc-preview-paper.template-classic_professional {
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+.doc-preview-paper.template-classic_professional .doc-heading {
+    color: #1e40af;
+    border-bottom: 1px solid #1e40af;
+}
+
+.doc-preview-paper.template-modern_minimal {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+.doc-preview-paper.template-modern_minimal .doc-heading {
+    color: #0d9488;
+    border-bottom: 2px solid #0d9488;
+}
+
+.doc-preview-paper.template-technical {
+    font-family: 'Courier New', monospace;
+}
+.doc-preview-paper.template-technical .doc-heading {
+    color: #4f46e5;
+    border-bottom: 1px dashed #4f46e5;
+}
+
+/* Document Header */
+.doc-header {
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.doc-name {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.doc-contact-line {
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-bottom: 0.8rem;
+}
+
+.doc-divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin-bottom: 1.2rem;
+}
+
+/* Document Sections */
+.doc-section {
+    margin-bottom: 1.2rem;
+}
+
+.doc-heading {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding-bottom: 0.2rem;
+}
+
+.doc-body {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: #374151;
+}
+
+.doc-bullet {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.86rem;
+    line-height: 1.4;
+    color: #1f2937;
+    padding-left: 0.5rem;
+}
+
+.doc-project-block {
+    margin-bottom: 0.6rem;
+}
+
+.doc-project-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #111827;
+    margin-bottom: 0.2rem;
+}

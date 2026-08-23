@@ -1,0 +1,94 @@
+.version-history-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    margin-top: 1.5rem;
+}
+
+.version-history-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.25rem;
+    font-size: 1.1rem;
+    color: #212529;
+}
+
+.vh-subtitle {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 1.25rem;
+}
+
+.versions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.vh-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.vh-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+.vh-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.vh-badge {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.vh-status {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.vh-item.approved .vh-status {
+    color: #28a745;
+}
+
+.vh-title {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #343a40;
+    margin-bottom: 0.5rem;
+}
+
+.vh-scores {
+    font-size: 0.85rem;
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.btn-view-v {
+    background-color: white;
+    border: 1px solid #007bff;
+    color: #007bff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+.btn-view-v:hover {
+    background-color: #007bff;
+    color: white;
+}
