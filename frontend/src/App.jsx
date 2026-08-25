@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LandingPage from './components/LandingPage';
 import UploadBox from './components/UploadBox';
 import ResumePreview from './components/ResumePreview';
 import JobInput from './components/JobInput';
@@ -74,6 +75,30 @@ function App() {
   const handleUpdateResumeData = (updatedData) => {
     setResumeData(updatedData);
   };
+
+  const openAuthModal = (mode = 'signin') => {
+    setAuthModalMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  if (!resumeData) {
+    return (
+      <div className="app-landing-wrapper">
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+          initialMode={authModalMode} 
+        />
+        <LandingPage 
+          onUploadSuccess={handleUploadSuccess}
+          onOpenAuthModal={openAuthModal}
+          user={user}
+          isAuthenticated={isAuthenticated}
+          logout={logout}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="app-container">

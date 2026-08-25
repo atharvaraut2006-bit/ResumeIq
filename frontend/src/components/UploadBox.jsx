@@ -89,24 +89,29 @@ const UploadBox = ({ onUploadSuccess }) => {
     return (
         <div className="upload-container">
             <div className="upload-header">
-                <h2>ResumeIQ</h2>
-                <p>Upload your resume in PDF or DOCX format</p>
+                <h2>Upload Your Resume</h2>
+                <p>Drop your resume here to get started. Supports PDF and DOCX</p>
             </div>
             
             {!validationFailed && (
                 <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
                     <input {...getInputProps()} />
+                    <div className="dropzone-icon">📄</div>
                     {isDragActive ? (
-                        <p>Drop your file here...</p>
+                        <p className="dropzone-text primary">Drop your resume file here...</p>
                     ) : (
-                        <p>Drag & drop a PDF or DOCX file here, or click to select file</p>
+                        <>
+                            <p className="dropzone-text primary">Drag & drop your resume here, or click to browse</p>
+                            <span className="btn-browse-file">Choose File</span>
+                            <span className="format-info-badge">Supports PDF & DOCX • Max 5MB</span>
+                        </>
                     )}
                 </div>
             )}
             
             {file && !validationFailed && (
                 <div className="selected-file">
-                    <p>Selected file: <strong>{file.name}</strong></p>
+                    <p className="file-info-text">Selected file: <strong>{file.name}</strong> ({(file.size / (1024 * 1024)).toFixed(2)} MB)</p>
                     {uploading && <div className="validation-progress">⏳ {statusStep}</div>}
                     
                     <button 
@@ -114,7 +119,7 @@ const UploadBox = ({ onUploadSuccess }) => {
                         disabled={uploading}
                         className="upload-btn"
                     >
-                        {uploading ? 'Validating & Analyzing...' : 'Analyze Resume'}
+                        {uploading ? 'Validating & Analyzing...' : '⚡ Analyze Resume'}
                     </button>
                 </div>
             )}
@@ -127,7 +132,7 @@ const UploadBox = ({ onUploadSuccess }) => {
                     <p className="ve-msg">{error}</p>
                     
                     <button className="btn-reupload" onClick={handleResetUpload}>
-                        🔄 Upload Another Resume
+                        🔄 Try Uploading Another File
                     </button>
                 </div>
             )}
