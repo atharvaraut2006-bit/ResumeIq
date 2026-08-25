@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ResumeVersionReview from './ResumeVersionReview';
-import ResumeVersionHistory from './ResumeVersionHistory';
 import './OptimizationDashboard.css';
 
 import { API_BASE_URL } from '../services/api';
@@ -381,15 +380,6 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                                 </div>
                             </div>
                         )}
-                        
-                        {gaps.learning_roadmap && gaps.learning_roadmap.length > 0 && (
-                            <div className="roadmap-section mt-4">
-                                <h4>SUGGESTED LEARNING ROADMAP</h4>
-                                <ul>
-                                    {gaps.learning_roadmap.map((step, i) => <li key={i}>{step}</li>)}
-                                </ul>
-                            </div>
-                        )}
                     </div>
 
                     <div className="opt-section mt-4">
@@ -447,13 +437,6 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                             )}
                         </div>
                     </div>
-
-                    {/* Resume Version History Component */}
-                    <ResumeVersionHistory 
-                        resumeId={resumeId} 
-                        currentJobId={jobId} 
-                        onSelectVersion={handleSelectExistingVersion}
-                    />
                 </div>
 
                 {/* Review Draft Modal */}
