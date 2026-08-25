@@ -179,7 +179,7 @@ function App() {
                   className={`tab-btn ${activeTab === 'coach' ? 'active' : ''}`}
                   onClick={() => setActiveTab('coach')}
                 >
-                  Career Strategy & Roadmap
+                  Resume Strategy & Optimization
                 </button>
               </div>
             )}
@@ -230,10 +230,13 @@ function App() {
                 onUpdateResumeData={handleUpdateResumeData}
               />
             ) : (
-              /* Phase 13 AI Resume Coach & Personalized Career Roadmap View */
+              /* Phase 13 Actionable Resume Strategy & Keyword Optimizer View */
               <ImprovementCoach 
                 resumeId={resumeData.id}
                 jobId={matchData.job_id || matchData.job?.id}
+                resumeData={resumeData}
+                onUpdateResumeData={handleUpdateResumeData}
+                onNavigateToExport={() => setActiveTab('export')}
               />
             )}
           </div>

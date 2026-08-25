@@ -4,13 +4,13 @@ import './ImprovementCoach.css';
 
 import { API_BASE_URL } from '../services/api';
 
-const ImprovementCoach = ({ resumeId, jobId }) => {
+const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onNavigateToExport }) => {
     const { token } = useAuth();
     const [planData, setPlanData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'quick', 'deep'
-    const [scoreGainToast, setScoreGainToast] = useState(null);
+    const [acceptedRecs, setAcceptedRecs] = useState([]);
     const [applyingId, setApplyingId] = useState(null);
 
     useEffect(() => {
@@ -32,85 +32,88 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
             if (data.success) {
                 setPlanData(data);
             } else {
-                setError(data.error?.message || "Failed to load AI improvement coach.");
+                setError(data.error?.message || "Failed to load resume strategy.");
             }
         } catch (e) {
-            setError("Connection error while loading AI coach.");
+            setError("Connection error while loading resume strategy.");
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAcceptRecommendation = async (recId) => {
-        setApplyingId(recId);
-        try {
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
+    const handleAcceptRecommendation = (rec) => {
+        setApplyingId(rec.id);
+        
+        // Update local status
+        setPlanData(prev => ({
+            ...prev,
+            recommendations: prev.recommendations.map(r => 
+                r.id === rec.id ? { ...r, status: 'accepted' } : r
+            )
+        }));
 
-            const res = await fetch(`${API_BASE_URL}/recommendations/${recId}/accept`, {
-                method: 'POST',
-                headers
-            });
-            const data = await res.json();
+        setAcceptedRecs(prev => {
+            if (prev.some(r => r.id === rec.id)) return prev;
+            return [...prev, rec];
+        });
 
-            if (data.success) {
-                setScoreGainToast(data.score_gain);
-                // Update local status
-                setPlanData(prev => ({
-                    ...prev,
-                    recommendations: prev.recommendations.map(r => 
-                        r.id === recId ? { ...r, status: 'accepted' } : r
-                    )
-                }));
-                setTimeout(() => setScoreGainToast(null), 6000);
+        setTimeout(() => setApplyingId(null), 300);
+    };
+
+    const handleRejectRecommendation = (recId) => {
+        setPlanData(prev => ({
+            ...prev,
+            recommendations: prev.recommendations.map(r => 
+                r.id === recId ? { ...r, status: 'rejected' } : r
+            )
+        }));
+        setAcceptedRecs(prev => prev.filter(r => r.id !== recId));
+    };
+
+    const handleApplyAllAndRedirect = () => {
+        if (!resumeData || !onUpdateResumeData) {
+            if (onNavigateToExport) onNavigateToExport();
+            return;
+        }
+
+        const currentSkills = Array.isArray(resumeData.skills) ? [...resumeData.skills] : [];
+        let rawSkillsText = resumeData.skills_raw || "";
+        let newSummary = resumeData.summary || "";
+
+        acceptedRecs.forEach(rec => {
+            // Extract keyword if it's a missing keyword suggestion
+            const kwMatch = rec.title.match(/['"]([^'"]+)['"]/);
+            if (kwMatch && kwMatch[1]) {
+                const kw = kwMatch[1].trim();
+                if (!currentSkills.includes(kw)) {
+                    currentSkills.push(kw);
+                }
+                if (!rawSkillsText.toLowerCase().includes(kw.toLowerCase())) {
+                    rawSkillsText += (rawSkillsText ? ", " : "") + kw;
+                }
+            } else if (rec.category === 'summary' && rec.after_text) {
+                newSummary = rec.after_text;
+            } else if (rec.after_text) {
+                // Check if after_text contains skills list
+                const cleanAfter = rec.after_text.replace(/^[•\-\*\s]+/, '').trim();
+                if (cleanAfter.includes(':')) {
+                    rawSkillsText += "\n" + cleanAfter;
+                }
             }
-        } catch (e) {
-            console.error("Failed to apply recommendation", e);
-        } finally {
-            setApplyingId(null);
-        }
-    };
+        });
 
-    const handleRejectRecommendation = async (recId) => {
-        try {
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
+        const updatedResume = {
+            ...resumeData,
+            skills: currentSkills,
+            skills_raw: rawSkillsText,
+            summary: newSummary,
+            is_edited: true
+        };
 
-            await fetch(`${API_BASE_URL}/recommendations/${recId}/reject`, {
-                method: 'POST',
-                headers
-            });
+        onUpdateResumeData(updatedResume);
 
-            setPlanData(prev => ({
-                ...prev,
-                recommendations: prev.recommendations.map(r => 
-                    r.id === recId ? { ...r, status: 'rejected' } : r
-                )
-            }));
-        } catch (e) {
-            console.error("Failed to reject recommendation", e);
-        }
-    };
-
-    const handleFeedback = async (recId, useful) => {
-        try {
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-
-            await fetch(`${API_BASE_URL}/recommendations/${recId}/feedback`, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify({ useful })
-            });
-
-            setPlanData(prev => ({
-                ...prev,
-                recommendations: prev.recommendations.map(r => 
-                    r.id === recId ? { ...r, feedback: useful } : r
-                )
-            }));
-        } catch (e) {
-            console.error("Failed to submit feedback", e);
+        if (onNavigateToExport) {
+            onNavigateToExport();
         }
     };
 
@@ -118,7 +121,7 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
         return (
             <div className="coach-loading-card">
                 <div className="spinner"></div>
-                <p>AI Resume Coach is analyzing your resume & job requirements...</p>
+                <p>Analyzing resume & job requirements for actionable strategy...</p>
             </div>
         );
     }
@@ -137,27 +140,18 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
 
     return (
         <div className="improvement-coach-container">
-            {/* Score Gain Alert Toast */}
-            {scoreGainToast && (
-                <div className="score-gain-toast">
-                    🚀 <strong>Recommendation Applied!</strong> Smart Re-Analysis Complete:
-                    <span className="gain-pill">ATS Score: {scoreGainToast.old_ats} → {scoreGainToast.new_ats} (+{scoreGainToast.ats_diff} pts)</span>
-                    <span className="gain-pill">JD Match: {scoreGainToast.old_match} → {scoreGainToast.new_match} (+{scoreGainToast.match_diff} pts)</span>
-                </div>
-            )}
-
             {/* Header & Overview */}
             <div className="coach-header-bar">
-                <h2>🎯 PERSONALIZED IMPROVEMENT PLAN & CAREER STRATEGY</h2>
-                <p>Prioritized, explainable improvements based on your resume and job description analysis.</p>
+                <h2>🎯 RESUME STRATEGY & KEYWORD OPTIMIZER</h2>
+                <p>Actionable keyword additions, section enhancements, and phrase optimizations tailored for ATS compliance.</p>
             </div>
 
-            {/* Career Readiness Score Summary */}
+            {/* Career Readiness Score Summary - All Blue Cards */}
             <div className="career-readiness-grid">
-                <div className="readiness-card primary">
+                <div className="readiness-card">
                     <span className="readiness-label">Overall Readiness</span>
                     <span className="readiness-val">{career_readiness.overall_score}%</span>
-                    <span className="readiness-sub">Composite Career Index</span>
+                    <span className="readiness-sub">Composite Index</span>
                 </div>
 
                 <div className="readiness-card">
@@ -179,7 +173,7 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
                 </div>
             </div>
 
-            {/* Top Strengths Section */}
+            {/* Top Strengths Section - Distinct Green Accent Panel */}
             {strengths && strengths.length > 0 && (
                 <div className="strengths-card-panel">
                     <h3>🌟 TOP RESUME STRENGTHS</h3>
@@ -190,6 +184,19 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
                             </div>
                         ))}
                     </div>
+                </div>
+            )}
+
+            {/* Batch Apply Sticky Action Banner */}
+            {acceptedRecs.length > 0 && (
+                <div className="batch-apply-bar">
+                    <div className="batch-info">
+                        <span className="batch-count">✨ {acceptedRecs.length} Improvement(s) Selected</span>
+                        <span>Click to apply all selected changes to your resume and open Live Builder.</span>
+                    </div>
+                    <button className="btn-batch-apply-redirect" onClick={handleApplyAllAndRedirect}>
+                        Apply Selected Improvements & Open Builder →
+                    </button>
                 </div>
             )}
 
@@ -226,20 +233,15 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
                             <div className="rec-card-header">
                                 <div className="rec-badge-group">
                                     <span className={`priority-pill ${rec.priority.toLowerCase()}`}>{rec.priority}</span>
-                                    <span className="confidence-pill">{rec.confidence}% Confidence</span>
                                 </div>
-                                {rec.status === 'accepted' && <span className="status-tag accepted">✓ APPLIED</span>}
+                                {rec.status === 'accepted' && <span className="status-tag accepted">✓ ACCEPTED</span>}
                                 {rec.status === 'rejected' && <span className="status-tag rejected">✕ DISMISSED</span>}
                             </div>
 
                             <h4 className="rec-title">{rec.title}</h4>
                             <p className="rec-desc">{rec.description}</p>
-                            
-                            <div className="rec-reason-box">
-                                💡 <strong>Why this matters:</strong> {rec.reason}
-                            </div>
 
-                            {/* Before vs After Diff View */}
+                            {/* Clean Current Text vs Proposed Improvement Diff View */}
                             {rec.before_text && rec.after_text && (
                                 <div className="diff-view-box">
                                     <div className="diff-col before">
@@ -253,22 +255,15 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
                                 </div>
                             )}
 
-                            {/* Impact Badge */}
-                            {rec.impact && (
-                                <div className="rec-impact">
-                                    📈 <strong>Expected Impact:</strong> {rec.impact}
-                                </div>
-                            )}
-
                             {/* Action Buttons */}
                             {rec.status === 'pending' && (
                                 <div className="rec-actions-bar">
                                     <button 
                                         className="btn-apply-rec" 
-                                        onClick={() => handleAcceptRecommendation(rec.id)}
+                                        onClick={() => handleAcceptRecommendation(rec)}
                                         disabled={applyingId === rec.id}
                                     >
-                                        {applyingId === rec.id ? 'Applying & Re-analyzing...' : '⚡ Accept & Apply Improvement'}
+                                        Accept & Apply Improvement
                                     </button>
                                     <button 
                                         className="btn-reject-rec" 
@@ -278,23 +273,6 @@ const ImprovementCoach = ({ resumeId, jobId }) => {
                                     </button>
                                 </div>
                             )}
-
-                            {/* Feedback Mechanism */}
-                            <div className="rec-feedback-footer">
-                                <span>Was this recommendation helpful?</span>
-                                <button 
-                                    className={`btn-fb ${rec.feedback === true ? 'active' : ''}`}
-                                    onClick={() => handleFeedback(rec.id, true)}
-                                >
-                                    👍 Yes
-                                </button>
-                                <button 
-                                    className={`btn-fb ${rec.feedback === false ? 'active' : ''}`}
-                                    onClick={() => handleFeedback(rec.id, false)}
-                                >
-                                    👎 No
-                                </button>
-                            </div>
                         </div>
                     ))}
                 </div>
