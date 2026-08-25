@@ -4,36 +4,20 @@ import './ResumeBuilderExport.css';
 
 import { API_BASE_URL } from '../services/api';
 
-const getAvailableSections = (data) => {
-    if (!data) return [];
-    const available = [];
-    
-    if (data.summary && data.summary.trim()) {
-        available.push({ id: 'summary', label: 'Summary' });
-    }
-    if (data.skills_raw || (data.skills && data.skills.length > 0)) {
-        available.push({ id: 'skills', label: 'Technical Skills' });
-    }
-    if (data.experience && data.experience.length > 0 && data.experience.some(e => (e.raw || e.description || '').trim())) {
-        available.push({ id: 'experience', label: 'Work Experience' });
-    }
-    if (data.projects && data.projects.length > 0) {
-        available.push({ id: 'projects', label: 'Projects' });
-    }
-    if (data.education && data.education.length > 0) {
-        available.push({ id: 'education', label: 'Education' });
-    }
-    if (data.certifications && data.certifications.length > 0) {
-        available.push({ id: 'certifications', label: 'Certifications' });
-    }
-    if (data.achievements && data.achievements.length > 0) {
-        available.push({ id: 'achievements', label: 'Achievements' });
-    }
-    return available;
-};
+const ALL_SECTION_DEFS = [
+    { id: 'summary', label: 'Summary / Objective' },
+    { id: 'skills', label: 'Technical Skills' },
+    { id: 'projects', label: 'Projects' },
+    { id: 'experience', label: 'Work Experience' },
+    { id: 'education', label: 'Education' },
+    { id: 'certifications', label: 'Certifications' },
+    { id: 'achievements', label: 'Achievements' }
+];
+
+const getAvailableSections = () => ALL_SECTION_DEFS;
 
 const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateResumeData }) => {
-    const availableSections = getAvailableSections(resumeData);
+    const availableSections = getAvailableSections();
     const availableIds = availableSections.map(s => s.id);
 
     const [selectedTemplate, setSelectedTemplate] = useState('ats_focused');
@@ -57,6 +41,20 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                 contact: { ...(resumeData.contact || {}), [field]: value }
             });
         }
+    };
+
+    const handleArrayItemEdit = (sectionKey, itemIdx, fieldName, value) => {
+        if (!onUpdateResumeData || !resumeData) return;
+        const currentList = Array.isArray(resumeData[sectionKey]) ? [...resumeData[sectionKey]] : [];
+        while (currentList.length <= itemIdx) {
+            currentList.push({});
+        }
+        const updatedItem = typeof currentList[itemIdx] === 'object' && currentList[itemIdx] !== null 
+            ? { ...currentList[itemIdx], [fieldName]: value, raw: fieldName === 'raw' || fieldName === 'description' ? value : (currentList[itemIdx].raw || value) }
+            : { raw: value, [fieldName]: value };
+        
+        currentList[itemIdx] = updatedItem;
+        onUpdateResumeData({ ...resumeData, [sectionKey]: currentList });
     };
 
     useEffect(() => {
@@ -205,10 +203,10 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                         </div>
                     </div>
 
-                    {/* 3. Live Resume Editor (Write & Edit) */}
+                    {/* 3. Live Resume Editor (Write & Edit All Sections) */}
                     <div className="panel-card mt-3">
                         <h3>3. LIVE RESUME EDITOR (WRITE & EDIT)</h3>
-                        <p className="small-text">Edit or write text directly to update your resume in real-time before export.</p>
+                        <p className="small-text">Edit or write text for any section of your resume in real-time before export.</p>
                         <div className="live-editor-group">
                             <div className="editor-field">
                                 <label>Full Name:</label>
@@ -218,6 +216,23 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     onChange={e => handleContactEdit('name', e.target.value)} 
                                     placeholder="Candidate Full Name"
                                 />
+                            </div>
+                            <div className="editor-field">
+                                <label>Email & Phone:</label>
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <input 
+                                        type="text" 
+                                        value={resumeData?.contact?.email || ''} 
+                                        onChange={e => handleContactEdit('email', e.target.value)} 
+                                        placeholder="Email Address"
+                                    />
+                                    <input 
+                                        type="text" 
+                                        value={resumeData?.contact?.phone || ''} 
+                                        onChange={e => handleContactEdit('phone', e.target.value)} 
+                                        placeholder="Phone Number"
+                                    />
+                                </div>
                             </div>
                             <div className="editor-field">
                                 <label>Summary / Objective:</label>
@@ -232,9 +247,52 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                 <label>Technical Skills (Comma Separated):</label>
                                 <textarea 
                                     rows={2} 
-                                    value={Array.isArray(resumeData?.skills) ? resumeData.skills.join(', ') : (resumeData?.skills || '')} 
+                                    value={Array.isArray(resumeData?.skills) ? resumeData.skills.map(s => typeof s === 'object' ? (s.canonical_name || s.skill_name || '') : String(s)).filter(Boolean).join(', ') : (resumeData?.skills || '')} 
                                     onChange={e => handleFieldEdit('skills', e.target.value.split(',').map(s => s.trim()))}
-                                    placeholder="C++, Python, React, SQL, Java..."
+                                    placeholder="C++, Python, React, SQL, Java, AWS..."
+                                />
+                            </div>
+                            <div className="editor-field">
+                                <label>Projects (Title & Details):</label>
+                                <input 
+                                    type="text" 
+                                    value={resumeData?.projects?.[0]?.name || resumeData?.projects?.[0]?.title || ''} 
+                                    onChange={e => handleArrayItemEdit('projects', 0, 'name', e.target.value)} 
+                                    placeholder="Project Title (e.g. Weather Forecast Website)"
+                                    style={{ marginBottom: '0.3rem' }}
+                                />
+                                <textarea 
+                                    rows={3} 
+                                    value={resumeData?.projects?.[0]?.raw || resumeData?.projects?.[0]?.description || ''} 
+                                    onChange={e => handleArrayItemEdit('projects', 0, 'raw', e.target.value)}
+                                    placeholder="Project description & key bullet points..."
+                                />
+                            </div>
+                            <div className="editor-field">
+                                <label>Work Experience (Role & Details):</label>
+                                <textarea 
+                                    rows={3} 
+                                    value={resumeData?.experience?.[0]?.raw || resumeData?.experience?.[0]?.description || ''} 
+                                    onChange={e => handleArrayItemEdit('experience', 0, 'raw', e.target.value)}
+                                    placeholder="Job title, company & key responsibilities..."
+                                />
+                            </div>
+                            <div className="editor-field">
+                                <label>Education (Degree & Institution):</label>
+                                <textarea 
+                                    rows={2} 
+                                    value={resumeData?.education?.[0]?.raw || (resumeData?.education?.[0]?.degree ? `${resumeData.education[0].degree} - ${resumeData.education[0].institution || ''}` : '')} 
+                                    onChange={e => handleArrayItemEdit('education', 0, 'raw', e.target.value)}
+                                    placeholder="B.Tech Computer Science - VIT (CGPA: 9.24)"
+                                />
+                            </div>
+                            <div className="editor-field">
+                                <label>Certifications & Achievements:</label>
+                                <textarea 
+                                    rows={2} 
+                                    value={resumeData?.certifications?.[0]?.raw || resumeData?.certifications?.[0]?.name || ''} 
+                                    onChange={e => handleArrayItemEdit('certifications', 0, 'raw', e.target.value)}
+                                    placeholder="AWS Certified Developer, NPTEL IIT Madras..."
                                 />
                             </div>
                         </div>
