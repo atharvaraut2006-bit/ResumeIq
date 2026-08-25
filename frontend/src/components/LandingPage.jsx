@@ -55,10 +55,6 @@ const LandingPage = ({ onUploadSuccess, onOpenAuthModal, user, isAuthenticated, 
       {/* SECTION 3 — HERO SECTION */}
       <section className="hero-section">
         <div className="landing-container">
-          <div className="hero-badge">
-            <span>✨</span> Next-Generation AI Resume Intelligence Platform
-          </div>
-
           <h1 className="hero-title">
             Build a Resume That <span className="highlight">Matches the Job.</span>
           </h1>
