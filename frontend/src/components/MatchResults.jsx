@@ -129,7 +129,7 @@ const MatchResults = ({ matchData, onAnalyzeAnother }) => {
             <div className="match-header">
                 <div>
                     <h3>{job?.title || "Unknown Title"}</h3>
-                    <p className="company-text">Company: {job?.company || "Unknown Company"}</p>
+                    <p className="company-text">Company: <strong>{job?.company || "Unknown Company"}</strong></p>
                 </div>
                 
                 <CircularScoreGauge 
@@ -225,8 +225,9 @@ const MatchResults = ({ matchData, onAnalyzeAnother }) => {
                 </ul>
             </div>
 
-            <div className="disclaimer-text">
-                Note: This score represents Resume–Job Description semantic compatibility, not probability of getting hired.
+            <div className="disclaimer-note-card">
+                <span className="note-icon">ℹ️</span>
+                <span><strong>Note:</strong> This score represents Resume–Job Description semantic compatibility, not probability of getting hired.</span>
             </div>
 
             <div className="match-actions">

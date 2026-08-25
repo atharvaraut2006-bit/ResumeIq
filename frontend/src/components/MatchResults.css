@@ -21,8 +21,14 @@
 }
 
 .company-text {
-    color: #6c757d;
-    margin-top: 0.25rem;
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-top: 0.35rem;
+}
+
+.company-text strong {
+    color: #0f172a;
+    font-weight: 700;
 }
 
 .circular-gauge-wrapper {
@@ -267,12 +273,28 @@
     color: #495057;
 }
 
-.disclaimer-text {
-    font-size: 0.8rem;
-    color: #6c757d;
-    text-align: center;
-    margin-top: 1rem;
-    font-style: italic;
+.disclaimer-note-card {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin: 1.5rem 0 1.25rem 0;
+    font-size: 0.85rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+.disclaimer-note-card strong {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.note-icon {
+    font-size: 1.05rem;
+    flex-shrink: 0;
 }
 
 .match-actions {
