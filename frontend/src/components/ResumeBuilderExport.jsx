@@ -64,6 +64,31 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
         };
     }, []);
 
+    const [fontFamily, setFontFamily] = useState('Helvetica, Arial, sans-serif');
+    const [fontSize, setFontSize] = useState('3');
+    const [fontColor, setFontColor] = useState('#111827');
+    const [highlightColor, setHighlightColor] = useState('#ffff00');
+    const [bulletMenuOpen, setBulletMenuOpen] = useState(false);
+
+    const applyBulletStyle = (styleType) => {
+        document.execCommand('insertUnorderedList', false, null);
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+            let node = selection.getRangeAt(0).startContainer;
+            while (node && node !== document.body) {
+                if (node.nodeName === 'UL') {
+                    if (styleType === 'square') node.style.listStyleType = 'square';
+                    else if (styleType === 'circle') node.style.listStyleType = 'circle';
+                    else if (styleType === 'dash') node.style.listStyleType = '"– "';
+                    else node.style.listStyleType = 'disc';
+                    break;
+                }
+                node = node.parentNode;
+            }
+        }
+        setTimeout(updateFormatStates, 30);
+    };
+
     const applyFormat = (cmd, val = null) => {
         document.execCommand(cmd, false, val);
         setTimeout(updateFormatStates, 30);
@@ -256,14 +281,46 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                     {/* 3. Rich Text Formatting Toolbar */}
                     <div className="panel-card mt-3 word-toolbar-card">
                         <h3>3. RICH TEXT FORMATTING TOOLBAR</h3>
-                        <p className="small-text">Select any text directly on your resume preview paper and use the formatting tools below to apply bold, italic, underline, or lists!</p>
+                        <p className="small-text">Select any text directly on your resume preview paper and use the formatting tools below to customize fonts, colors, sizes, alignment, and bullet lists.</p>
                         
                         <div className="word-toolbar">
+                            {/* Font Family & Size */}
+                            <div className="toolbar-group">
+                                <select 
+                                    className="toolbar-select font-family-select" 
+                                    value={fontFamily}
+                                    onChange={(e) => { setFontFamily(e.target.value); applyFormat('fontName', e.target.value); }}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                >
+                                    <option value="Helvetica, Arial, sans-serif">Helvetica / Arial</option>
+                                    <option value="Georgia, Times New Roman, serif">Georgia / Serif</option>
+                                    <option value="Inter, Segoe UI, sans-serif">Inter / Modern</option>
+                                    <option value="Courier New, monospace">Courier / Monospace</option>
+                                    <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                                </select>
+
+                                <select 
+                                    className="toolbar-select font-size-select" 
+                                    value={fontSize}
+                                    onChange={(e) => { setFontSize(e.target.value); applyFormat('fontSize', e.target.value); }}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                >
+                                    <option value="1">Small (10pt)</option>
+                                    <option value="3">Normal (12pt)</option>
+                                    <option value="4">Medium (14pt)</option>
+                                    <option value="5">Large (16pt)</option>
+                                    <option value="6">Heading (18pt)</option>
+                                </select>
+                            </div>
+
+                            <div className="toolbar-divider"></div>
+
+                            {/* Formatting B, I, U */}
                             <div className="toolbar-group">
                                 <button 
                                     type="button"
                                     className={`toolbar-btn btn-bold ${formatStates.bold ? 'active' : ''}`} 
-                                    title="Bold (Ctrl+B)" 
+                                    title="Bold" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('bold'); }}
                                 >
                                     <strong>B</strong>
@@ -271,7 +328,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                 <button 
                                     type="button"
                                     className={`toolbar-btn btn-italic ${formatStates.italic ? 'active' : ''}`} 
-                                    title="Italic (Ctrl+I)" 
+                                    title="Italic" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('italic'); }}
                                 >
                                     <em>I</em>
@@ -279,7 +336,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                 <button 
                                     type="button"
                                     className={`toolbar-btn btn-underline ${formatStates.underline ? 'active' : ''}`} 
-                                    title="Underline (Ctrl+U)" 
+                                    title="Underline" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('underline'); }}
                                 >
                                     <u>U</u>
@@ -288,27 +345,88 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
 
                             <div className="toolbar-divider"></div>
 
+                            {/* Color Pickers */}
                             <div className="toolbar-group">
+                                <label className="color-picker-label" title="Font Color">
+                                    <span className="color-label-text">Text Color</span>
+                                    <input 
+                                        type="color" 
+                                        className="color-input" 
+                                        value={fontColor} 
+                                        onChange={(e) => { setFontColor(e.target.value); applyFormat('foreColor', e.target.value); }}
+                                    />
+                                </label>
+                                <label className="color-picker-label highlight" title="Highlight Color">
+                                    <span className="color-label-text">Highlight</span>
+                                    <input 
+                                        type="color" 
+                                        className="color-input" 
+                                        value={highlightColor} 
+                                        onChange={(e) => { setHighlightColor(e.target.value); applyFormat('hiliteColor', e.target.value); }}
+                                    />
+                                </label>
+                            </div>
+
+                            <div className="toolbar-divider"></div>
+
+                            {/* Bullet & Numbered Lists */}
+                            <div className="toolbar-group" style={{ position: 'relative' }}>
                                 <button 
                                     type="button"
                                     className={`toolbar-btn ${formatStates.bulletList ? 'active' : ''}`} 
-                                    title="Bullet List" 
-                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('insertUnorderedList'); }}
+                                    title="Bullet List Options" 
+                                    onClick={() => setBulletMenuOpen(!bulletMenuOpen)}
+                                    onMouseDown={(e) => { e.preventDefault(); }}
                                 >
-                                    • Bullet List
+                                    Bullet List ▼
                                 </button>
+
+                                {bulletMenuOpen && (
+                                    <div className="bullet-style-menu">
+                                        <button 
+                                            type="button"
+                                            className="bullet-option-item"
+                                            onMouseDown={(e) => { e.preventDefault(); applyBulletStyle('disc'); setBulletMenuOpen(false); }}
+                                        >
+                                            • Standard Disc
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            className="bullet-option-item"
+                                            onMouseDown={(e) => { e.preventDefault(); applyBulletStyle('circle'); setBulletMenuOpen(false); }}
+                                        >
+                                            ○ Circle Bullet
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            className="bullet-option-item"
+                                            onMouseDown={(e) => { e.preventDefault(); applyBulletStyle('square'); setBulletMenuOpen(false); }}
+                                        >
+                                            ▪ Square Bullet
+                                        </button>
+                                        <button 
+                                            type="button"
+                                            className="bullet-option-item"
+                                            onMouseDown={(e) => { e.preventDefault(); applyBulletStyle('dash'); setBulletMenuOpen(false); }}
+                                        >
+                                            – Dash Bullet
+                                        </button>
+                                    </div>
+                                )}
+
                                 <button 
                                     type="button"
                                     className={`toolbar-btn ${formatStates.numberList ? 'active' : ''}`} 
                                     title="Numbered List" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('insertOrderedList'); }}
                                 >
-                                    1. List
+                                    Numbered List
                                 </button>
                             </div>
 
                             <div className="toolbar-divider"></div>
 
+                            {/* Alignment */}
                             <div className="toolbar-group">
                                 <button 
                                     type="button"
@@ -316,7 +434,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     title="Align Left" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('justifyLeft'); }}
                                 >
-                                    ⯇ Left
+                                    Left
                                 </button>
                                 <button 
                                     type="button"
@@ -324,7 +442,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     title="Align Center" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('justifyCenter'); }}
                                 >
-                                    ≡ Center
+                                    Center
                                 </button>
                                 <button 
                                     type="button"
@@ -332,12 +450,13 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     title="Align Right" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('justifyRight'); }}
                                 >
-                                    ⯈ Right
+                                    Right
                                 </button>
                             </div>
 
                             <div className="toolbar-divider"></div>
 
+                            {/* Actions & History */}
                             <div className="toolbar-group">
                                 <button 
                                     type="button"
@@ -345,7 +464,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     title="Undo" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('undo'); }}
                                 >
-                                    ↩ Undo
+                                    Undo
                                 </button>
                                 <button 
                                     type="button"
@@ -353,7 +472,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     title="Redo" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('redo'); }}
                                 >
-                                    ↪ Redo
+                                    Redo
                                 </button>
                                 <button 
                                     type="button"
@@ -361,7 +480,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     title="Clear Formatting" 
                                     onMouseDown={(e) => { e.preventDefault(); applyFormat('removeFormat'); }}
                                 >
-                                    🧹 Clear
+                                    Clear
                                 </button>
                             </div>
                         </div>

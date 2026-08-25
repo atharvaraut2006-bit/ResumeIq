@@ -125,9 +125,83 @@
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.toolbar-btn.btn-bold { font-weight: 900; }
-.toolbar-btn.btn-italic { font-style: italic; }
-.toolbar-btn.btn-underline { text-decoration: underline; }
+.toolbar-select {
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+}
+
+.toolbar-select:focus {
+    border-color: #2563eb;
+}
+
+.color-picker-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.color-picker-label.highlight {
+    background: #fef08a;
+    border-color: #fde047;
+    color: #854d0e;
+}
+
+.color-input {
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.bullet-style-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    padding: 0.3rem;
+    min-width: 140px;
+}
+
+.bullet-option-item {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.bullet-option-item:hover {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
 
 .toolbar-btn.btn-clear:hover {
     background-color: #ef4444;

@@ -246,7 +246,7 @@ const ImprovementCoach = ({
         <div className="improvement-coach-container">
             {/* Header & Overview */}
             <div className="coach-header-bar">
-                <h2>🎯 RESUME STRATEGY & KEYWORD OPTIMIZER</h2>
+                <h2>RESUME STRATEGY & KEYWORD OPTIMIZER</h2>
                 <p>Actionable keyword additions, section enhancements, and phrase optimizations tailored for ATS compliance.</p>
             </div>
 
@@ -282,7 +282,7 @@ const ImprovementCoach = ({
             {/* Top Strengths Section - Distinct Green Accent Panel */}
             {strengths && strengths.length > 0 && (
                 <div className="strengths-card-panel">
-                    <h3>🌟 TOP RESUME STRENGTHS</h3>
+                    <h3>TOP RESUME STRENGTHS</h3>
                     <div className="strengths-list">
                         {strengths.map((s, idx) => (
                             <div key={idx} className="strength-item">
@@ -297,7 +297,7 @@ const ImprovementCoach = ({
             {acceptedRecs && acceptedRecs.length > 0 && (
                 <div className="batch-apply-bar">
                     <div className="batch-info">
-                        <span className="batch-count">✨ {acceptedRecs.length} Improvement(s) Selected</span>
+                        <span className="batch-count">{acceptedRecs.length} Improvement(s) Selected</span>
                         <span>Click to apply all selected changes to your resume and open Live Builder.</span>
                     </div>
                     <button className="btn-batch-apply-redirect" onClick={handleApplyAllAndRedirect}>
@@ -309,7 +309,7 @@ const ImprovementCoach = ({
             {/* Prioritized Improvement Plan Section */}
             <div className="roadmap-section">
                 <div className="roadmap-header">
-                    <h3>📋 PRIORITIZED RESUME IMPROVEMENT PLAN</h3>
+                    <h3>PRIORITIZED RESUME IMPROVEMENT PLAN</h3>
                     
                     <div className="filter-tab-group">
                         <button 
@@ -322,13 +322,13 @@ const ImprovementCoach = ({
                             className={`filter-btn ${filterCategory === 'quick' ? 'active' : ''}`}
                             onClick={() => setFilterCategory('quick')}
                         >
-                            ⚡ Quick Fixes
+                            Quick Fixes
                         </button>
                         <button 
                             className={`filter-btn ${filterCategory === 'deep' ? 'active' : ''}`}
                             onClick={() => setFilterCategory('deep')}
                         >
-                            🎯 Deep Improvements
+                            Deep Improvements
                         </button>
                     </div>
                 </div>
