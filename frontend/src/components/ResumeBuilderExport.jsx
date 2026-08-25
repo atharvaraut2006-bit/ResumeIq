@@ -54,8 +54,33 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
         } catch (e) {}
     };
 
+    const savedRangeRef = React.useRef(null);
+
+    const saveSelection = () => {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+            let node = sel.getRangeAt(0).startContainer;
+            while (node && node !== document.body) {
+                if (node.classList && node.classList.contains('doc-preview-paper')) {
+                    savedRangeRef.current = sel.getRangeAt(0).cloneRange();
+                    break;
+                }
+                node = node.parentNode;
+            }
+        }
+    };
+
+    const restoreSelection = () => {
+        if (savedRangeRef.current) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(savedRangeRef.current);
+        }
+    };
+
     useEffect(() => {
         const handleSelection = () => {
+            saveSelection();
             updateFormatStates();
         };
         document.addEventListener('selectionchange', handleSelection);
@@ -71,6 +96,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
     const [bulletMenuOpen, setBulletMenuOpen] = useState(false);
 
     const applyBulletStyle = (styleType) => {
+        restoreSelection();
         document.execCommand('insertUnorderedList', false, null);
         const selection = window.getSelection();
         if (selection && selection.rangeCount > 0) {
@@ -90,7 +116,17 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
     };
 
     const applyFormat = (cmd, val = null) => {
+        restoreSelection();
         document.execCommand(cmd, false, val);
+        setTimeout(updateFormatStates, 30);
+    };
+
+    const applyColorFormat = (cmd, colorVal) => {
+        restoreSelection();
+        document.execCommand(cmd, false, colorVal);
+        if (cmd === 'hiliteColor') {
+            document.execCommand('backColor', false, colorVal);
+        }
         setTimeout(updateFormatStates, 30);
     };
 
@@ -345,26 +381,53 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
 
                             <div className="toolbar-divider"></div>
 
-                            {/* Color Pickers */}
+                            {/* Color Pickers & Swatches */}
                             <div className="toolbar-group">
-                                <label className="color-picker-label" title="Font Color">
+                                <label 
+                                    className="color-picker-label" 
+                                    title="Font Color"
+                                    onMouseDown={() => saveSelection()}
+                                    onPointerDown={() => saveSelection()}
+                                >
                                     <span className="color-label-text">Text Color</span>
                                     <input 
                                         type="color" 
                                         className="color-input" 
                                         value={fontColor} 
-                                        onChange={(e) => { setFontColor(e.target.value); applyFormat('foreColor', e.target.value); }}
+                                        onFocus={() => saveSelection()}
+                                        onChange={(e) => { 
+                                            const val = e.target.value;
+                                            setFontColor(val); 
+                                            applyColorFormat('foreColor', val); 
+                                        }}
                                     />
                                 </label>
-                                <label className="color-picker-label highlight" title="Highlight Color">
+                                <label 
+                                    className="color-picker-label highlight" 
+                                    title="Highlight Color"
+                                    onMouseDown={() => saveSelection()}
+                                    onPointerDown={() => saveSelection()}
+                                >
                                     <span className="color-label-text">Highlight</span>
                                     <input 
                                         type="color" 
                                         className="color-input" 
                                         value={highlightColor} 
-                                        onChange={(e) => { setHighlightColor(e.target.value); applyFormat('hiliteColor', e.target.value); }}
+                                        onFocus={() => saveSelection()}
+                                        onChange={(e) => { 
+                                            const val = e.target.value;
+                                            setHighlightColor(val); 
+                                            applyColorFormat('hiliteColor', val); 
+                                        }}
                                     />
                                 </label>
+                                <div className="color-swatches">
+                                    <button type="button" className="swatch-btn" style={{ background: '#111827' }} title="Black" onMouseDown={(e) => { e.preventDefault(); applyColorFormat('foreColor', '#111827'); }} />
+                                    <button type="button" className="swatch-btn" style={{ background: '#2563eb' }} title="Blue" onMouseDown={(e) => { e.preventDefault(); applyColorFormat('foreColor', '#2563eb'); }} />
+                                    <button type="button" className="swatch-btn" style={{ background: '#dc2626' }} title="Red" onMouseDown={(e) => { e.preventDefault(); applyColorFormat('foreColor', '#dc2626'); }} />
+                                    <button type="button" className="swatch-btn" style={{ background: '#16a34a' }} title="Green" onMouseDown={(e) => { e.preventDefault(); applyColorFormat('foreColor', '#16a34a'); }} />
+                                    <button type="button" className="swatch-btn" style={{ background: '#fef08a' }} title="Highlight Yellow" onMouseDown={(e) => { e.preventDefault(); applyColorFormat('hiliteColor', '#fef08a'); }} />
+                                </div>
                             </div>
 
                             <div className="toolbar-divider"></div>
