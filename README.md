@@ -1,6 +1,6 @@
-# 📄 ResumeIQ — AI-Powered Resume Analyzer & Job Matching Platform
+# 📄 ResumeIQ — Resume Analyzer & Job Matching Platform
 
-ResumeIQ is a full-stack, enterprise-grade AI Resume Analysis, Job Matching, ATS Optimization, and Resume Builder platform. It transforms raw candidate resumes into job-specific, ATS-optimized, downloadable PDF and DOCX documents with explainable scoring and 1-click AI coaching.
+ResumeIQ is a full-stack, enterprise-grade Resume Analysis, Job Matching, ATS Optimization, and Resume Builder platform. It transforms raw candidate resumes into job-specific, ATS-optimized, downloadable PDF and DOCX documents with explainable scoring and 1-click strategy optimization.
 
 ---
 
