@@ -203,8 +203,10 @@ const ResumeDocumentPreview = ({
                         <h4 className="doc-heading">EDUCATION</h4>
                         {eduList.map((e, idx) => {
                             const eText = e.raw || `${e.degree || ''} - ${e.institution || ''}`;
-                            const cleanText = eText.replace(/^[•\-\*\s]+/, '').trim();
-                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
+                            const bullets = parseBulletParagraphs(eText);
+                            return bullets.map((cleanText, bIdx) => (
+                                <p key={`${idx}-${bIdx}`} className="doc-bullet">• {cleanText}</p>
+                            ));
                         })}
                     </div>
                 );

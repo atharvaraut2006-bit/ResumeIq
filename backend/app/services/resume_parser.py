@@ -15,8 +15,8 @@ def parse_resume(text: str) -> Dict[str, Any]:
     """
     sections = extract_sections(text)
     
-    # Extract specific entities from sections
-    contact_info = extract_contact_info(text, sections.get("summary", "") + "\n" + sections.get("contact", ""))
+    # Extract specific entities from sections (use contact section first for name)
+    contact_info = extract_contact_info(text, sections.get("contact", "") + "\n" + text)
     
     return {
         "contact": contact_info,
@@ -179,18 +179,19 @@ def extract_contact_info(full_text: str, top_text: str) -> Dict[str, Any]:
     name = None
     lines = top_text.split('\n')
     for line in lines:
-        line = line.strip()
-        if not line:
+        line_clean = line.strip()
+        if not line_clean:
             continue
-        # If it contains an email or phone, skip
-        if '@' in line or re.search(r'\d{10}', re.sub(r'[-.\s]', '', line)):
+        # Skip lines containing email, phone, or URLs
+        if '@' in line_clean or re.search(r'\d{10}', re.sub(r'[-.\s]', '', line_clean)) or 'linkedin' in line_clean.lower() or 'github' in line_clean.lower():
             continue
-        # If it's a known keyword, skip
-        if line.upper() in ['RESUME', 'CV', 'CURRICULUM VITAE']:
+        # Skip known section headings
+        if line_clean.upper() in HEADING_KEYWORDS_MAP or line_clean.upper() in ['RESUME', 'CV', 'CURRICULUM VITAE']:
             continue
-        # Seems like a good candidate for a name
-        name = line
-        break
+        # Candidates for a name must be short (<= 35 chars, <= 4 words) and not contain summary verbiage
+        if len(line_clean) <= 40 and len(line_clean.split()) <= 4 and not re.search(r'\b(undergraduate|experienced|passionate|developed|engineered|foundation|cgpa|vit|btech|computer|science)\b', line_clean, re.I):
+            name = line_clean
+            break
         
     return {
         "name": name,
