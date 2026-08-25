@@ -253,12 +253,12 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                 {/* Missing Skill Confirmation Prompts */}
                 {allHighGaps.length > 0 && (
                     <div className="skill-confirm-box">
-                        <div className="sc-title">⚠️ MISSING REQUIRED SKILLS CONFIRMATION</div>
-                        <div className="sc-desc">The AI will NEVER inject unverified skills. Confirm if you genuinely possess any of these missing required skills:</div>
+                        <div className="sc-title">MISSING REQUIRED SKILLS CONFIRMATION</div>
+                        <div className="sc-desc">The AI will NEVER inject unverified skills. Confirm if you genuinely have any of these missing required skills:</div>
                         <div className="sc-list">
                             {allHighGaps.map(g => (
                                 <div key={g.skill} className="sc-item">
-                                    <span className="sc-skill-label">Do you possess <strong>{g.skill}</strong>?</span>
+                                    <span className="sc-skill-label">Do you know <strong>{g.skill}</strong>?</span>
                                     <div className="sc-buttons">
                                         <button className={`sc-btn ${skillAnswers[g.skill] === 'yes' ? 'yes' : ''}`} onClick={() => handleSkillConfirm(g.skill, 'yes')}>Yes, add it</button>
                                         <button className={`sc-btn ${skillAnswers[g.skill] === 'no' ? 'no' : ''}`} onClick={() => handleSkillConfirm(g.skill, 'no')}>No</button>
