@@ -107,21 +107,79 @@ const ImprovementCoach = ({
         const currentSkills = Array.isArray(resumeData.skills) ? [...resumeData.skills] : [];
         let rawSkillsText = resumeData.skills_raw || "";
         let newSummary = resumeData.summary || "";
+        let currentProjects = Array.isArray(resumeData.projects) ? resumeData.projects.map(p => ({ ...p })) : [];
+        let currentExperience = Array.isArray(resumeData.experience) ? resumeData.experience.map(e => ({ ...e })) : [];
+        let newRawText = resumeData.raw_text || "";
 
         (acceptedRecs || []).forEach(rec => {
-            // Extract keyword if it's a missing keyword suggestion
-            const kwMatch = rec.title ? rec.title.match(/['"]([^'"]+)['"]/) : null;
-            if (kwMatch && kwMatch[1]) {
-                const kw = kwMatch[1].trim();
-                if (!currentSkills.includes(kw)) {
-                    currentSkills.push(kw);
+            const titleLower = (rec.title || '').toLowerCase();
+            const catLower = (rec.category || '').toLowerCase();
+
+            // 1. Missing Keyword Recommendation
+            if (catLower === 'missing_keywords' || titleLower.includes('missing keyword') || titleLower.includes('add keyword')) {
+                const kwMatch = rec.title ? rec.title.match(/['"]([^'"]+)['"]/) : null;
+                if (kwMatch && kwMatch[1]) {
+                    const kw = kwMatch[1].trim();
+                    if (!currentSkills.includes(kw)) {
+                        currentSkills.push(kw);
+                    }
+                    if (!rawSkillsText.toLowerCase().includes(kw.toLowerCase())) {
+                        rawSkillsText += (rawSkillsText ? ", " : "") + kw;
+                    }
                 }
-                if (!rawSkillsText.toLowerCase().includes(kw.toLowerCase())) {
-                    rawSkillsText += (rawSkillsText ? ", " : "") + kw;
+            } 
+            // 2. Summary Improvement Recommendation
+            else if (catLower === 'summary' || titleLower.includes('summary')) {
+                if (rec.after_text) {
+                    newSummary = rec.after_text;
+                    if (rec.before_text && newRawText.includes(rec.before_text)) {
+                        newRawText = newRawText.replace(rec.before_text, rec.after_text);
+                    }
                 }
-            } else if (rec.category === 'summary' && rec.after_text) {
-                newSummary = rec.after_text;
-            } else if (rec.after_text) {
+            } 
+            // 3. Project Improvement / Quantification Recommendation
+            else if (catLower === 'projects' || catLower === 'quantification' || titleLower.includes('project')) {
+                if (rec.before_text && rec.after_text) {
+                    let replacedInProj = false;
+                    currentProjects = currentProjects.map(p => {
+                        const raw = p.raw || p.description || "";
+                        if (raw.includes(rec.before_text)) {
+                            replacedInProj = true;
+                            return { ...p, raw: raw.replace(rec.before_text, rec.after_text), description: (p.description || "").replace(rec.before_text, rec.after_text) };
+                        }
+                        return p;
+                    });
+                    if (!replacedInProj && currentProjects.length > 0) {
+                        const firstProj = currentProjects[0];
+                        const oldRaw = firstProj.raw || firstProj.description || "";
+                        currentProjects[0] = {
+                            ...firstProj,
+                            raw: oldRaw ? oldRaw + "\n• " + rec.after_text : rec.after_text,
+                            description: rec.after_text
+                        };
+                    }
+                    if (newRawText.includes(rec.before_text)) {
+                        newRawText = newRawText.replace(rec.before_text, rec.after_text);
+                    }
+                }
+            }
+            // 4. Experience Improvement Recommendation
+            else if (catLower === 'experience' || titleLower.includes('experience') || titleLower.includes('role')) {
+                if (rec.before_text && rec.after_text) {
+                    currentExperience = currentExperience.map(e => {
+                        const raw = e.raw || e.description || "";
+                        if (raw.includes(rec.before_text)) {
+                            return { ...e, raw: raw.replace(rec.before_text, rec.after_text), description: (e.description || "").replace(rec.before_text, rec.after_text) };
+                        }
+                        return e;
+                    });
+                    if (newRawText.includes(rec.before_text)) {
+                        newRawText = newRawText.replace(rec.before_text, rec.after_text);
+                    }
+                }
+            }
+            // Fallback for general skills/text rewrites
+            else if (rec.after_text) {
                 const cleanAfter = rec.after_text.replace(/^[•\-\*\s]+/, '').trim();
                 if (cleanAfter.includes(':')) {
                     rawSkillsText += "\n" + cleanAfter;
@@ -134,6 +192,9 @@ const ImprovementCoach = ({
             skills: currentSkills,
             skills_raw: rawSkillsText,
             summary: newSummary,
+            projects: currentProjects,
+            experience: currentExperience,
+            raw_text: newRawText,
             is_edited: true
         };
 
