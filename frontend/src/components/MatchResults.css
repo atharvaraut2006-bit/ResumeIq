@@ -1,8 +1,9 @@
 .match-results {
     background-color: #ffffff;
     padding: 2rem;
-    border-radius: 12px;
     border: 1px solid #e2e8f0;
+    border-left: none;
+    border-radius: 0 12px 12px 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
     margin-top: 0;
     box-sizing: border-box;
