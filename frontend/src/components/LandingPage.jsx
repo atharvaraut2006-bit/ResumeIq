@@ -60,7 +60,7 @@ const LandingPage = ({ onUploadSuccess, onOpenAuthModal, user, isAuthenticated, 
           </h1>
 
           <p className="hero-subtitle">
-            Analyze your resume, discover skill gaps, improve ATS compatibility, and create job-specific resume versions with AI.
+            Analyze your resume, discover skill gaps, improve ATS compatibility, and create job-specific resume versions with ResumeIQ.
           </p>
 
           <div className="hero-cta-group">
