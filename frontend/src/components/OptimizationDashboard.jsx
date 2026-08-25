@@ -258,7 +258,7 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                         <div className="sc-list">
                             {allHighGaps.map(g => (
                                 <div key={g.skill} className="sc-item">
-                                    <span>Do you have experience with <strong>{g.skill}</strong>?</span>
+                                    <span className="sc-skill-label">Do you possess <strong>{g.skill}</strong>?</span>
                                     <div className="sc-buttons">
                                         <button className={`sc-btn ${skillAnswers[g.skill] === 'yes' ? 'yes' : ''}`} onClick={() => handleSkillConfirm(g.skill, 'yes')}>Yes, add it</button>
                                         <button className={`sc-btn ${skillAnswers[g.skill] === 'no' ? 'no' : ''}`} onClick={() => handleSkillConfirm(g.skill, 'no')}>No</button>
