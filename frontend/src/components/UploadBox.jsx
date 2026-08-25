@@ -119,7 +119,7 @@ const UploadBox = ({ onUploadSuccess }) => {
                         disabled={uploading}
                         className="upload-btn"
                     >
-                        {uploading ? 'Validating & Analyzing...' : '⚡ Analyze Resume'}
+                        {uploading ? 'Validating & Analyzing...' : 'Analyze Resume'}
                     </button>
                 </div>
             )}
