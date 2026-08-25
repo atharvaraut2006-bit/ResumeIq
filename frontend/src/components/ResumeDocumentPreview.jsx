@@ -12,7 +12,11 @@ const parseBulletParagraphs = (rawStr) => {
         const clean = line.replace(/^[•\-\*\s]+/, '').trim();
         if (!clean) continue;
 
-        const isNewBullet = /^[•\-\*]/.test(line) || /^[\w\s&/()\-+]+:/.test(line);
+        const isNewBullet = 
+            /^[•\-\*]/.test(line) || 
+            /^[\w\s&/()\-+]+:/.test(line) ||
+            /^[A-Z][A-Za-z0-9\s&/()\-+]{2,40}(\s[–\-]\s|\s:|\()/i.test(line) ||
+            /^(Tech Stack|Languages|Database|Software Engineering|Core Concepts|Web & Tools|Machine Learning|Agentic AI|Frameworks|Cloud)/i.test(line);
 
         if (isNewBullet && currentItem) {
             items.push(currentItem);

@@ -86,11 +86,12 @@ def extract_sections(text: str) -> Dict[str, str]:
         non_meta_lines = [
             l for l in contact_lines 
             if '@' not in l and not re.search(r'\d{10}', re.sub(r'[-.\s]', '', l)) 
-            and not re.search(r'linkedin|github|http', l.lower())
+            and not re.search(r'linkedin|github|http|\|', l.lower())
+            and len(l.strip()) > 30
         ]
-        if len(non_meta_lines) >= 2:
-            potential_summary = " ".join(non_meta_lines[1:]).strip()
-            if len(potential_summary) > 25:
+        if non_meta_lines:
+            potential_summary = " ".join(non_meta_lines).strip()
+            if len(potential_summary) > 40 and '@' not in potential_summary and '|' not in potential_summary:
                 sections["summary"] = potential_summary
         
     return sections
