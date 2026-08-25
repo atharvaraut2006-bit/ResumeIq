@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ResumeVersionHistory.css';
 
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+import { API_BASE_URL } from '../services/api';
 
 const ResumeVersionHistory = ({ resumeId, currentJobId, onSelectVersion }) => {
     const [versions, setVersions] = useState([]);

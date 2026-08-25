@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './ResumeVersionReview.css';
 
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+import { API_BASE_URL } from '../services/api';
 
 const ResumeVersionReview = ({ version, changes: initialChanges, onFinalized, onClose }) => {
     const [changes, setChanges] = useState(initialChanges || []);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './ImprovementCoach.css';
 
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+import { API_BASE_URL } from '../services/api';
 
 const ImprovementCoach = ({ resumeId, jobId }) => {
     const { token } = useAuth();

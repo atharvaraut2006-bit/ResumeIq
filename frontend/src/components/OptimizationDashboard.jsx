@@ -3,7 +3,7 @@ import ResumeVersionReview from './ResumeVersionReview';
 import ResumeVersionHistory from './ResumeVersionHistory';
 import './OptimizationDashboard.css';
 
-const API_BASE_URL = 'http://127.0.0.1:5000/api';
+import { API_BASE_URL } from '../services/api';
 
 const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, renderBottomOnly, onVersionFinalized }) => {
     const [optData, setOptData] = useState(null);
