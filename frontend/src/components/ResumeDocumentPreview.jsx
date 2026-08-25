@@ -83,7 +83,7 @@ const ResumeDocumentPreview = ({
                 if (skillsRaw) {
                     items = parseBulletParagraphs(skillsRaw).filter(item => {
                         const clean = item.trim().toLowerCase();
-                        if (clean.startsWith('pre-final year') || clean.startsWith('passionate about') || clean.startsWith('experienced in building')) {
+                        if (clean.startsWith('pre-final year') || clean.startsWith('passionate about') || clean.startsWith('experienced in building') || clean.startsWith('projects:') || clean.startsWith('project:')) {
                             return false;
                         }
                         return true;
@@ -100,19 +100,22 @@ const ResumeDocumentPreview = ({
                     });
                 });
 
-                // Check skillsList for new user-added or confirmed skills
+                // Check skillsList for new user-added or confirmed skills (exclude projects)
                 let extraSkills = [];
                 if (Array.isArray(skillsList)) {
                     skillsList.forEach(s => {
                         const name = typeof s === 'object' ? (s.canonical_name || s.skill_name || String(s)) : String(s);
-                        if (name && !existingTokens.has(name.trim().toLowerCase())) {
-                            extraSkills.push(name.trim());
+                        const cleanName = (name || '').trim();
+                        const lowerName = cleanName.toLowerCase();
+                        if (cleanName && !lowerName.includes('project') && !lowerName.includes('website') && !existingTokens.has(lowerName)) {
+                            extraSkills.push(cleanName);
                         }
                     });
                 } else if (typeof skillsList === 'string' && skillsList.trim()) {
                     skillsList.split(',').forEach(s => {
                         const name = s.trim();
-                        if (name && !existingTokens.has(name.toLowerCase())) {
+                        const lowerName = name.toLowerCase();
+                        if (name && !lowerName.includes('project') && !lowerName.includes('website') && !existingTokens.has(lowerName)) {
                             extraSkills.push(name);
                         }
                     });

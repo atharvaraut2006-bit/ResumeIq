@@ -191,11 +191,14 @@ const ImprovementCoach = ({
                     }
                 }
             }
-            // Fallback for general skills/text rewrites
+            // Fallback for general skills/text rewrites (exclude project text)
             else if (rec.after_text) {
                 const cleanAfter = rec.after_text.replace(/^[•\-\*\s]+/, '').trim();
                 if (cleanAfter.includes(':')) {
-                    rawSkillsText += "\n" + cleanAfter;
+                    const catKey = cleanAfter.split(':')[0].toLowerCase();
+                    if (!catKey.includes('project') && !catKey.includes('experience') && !catKey.includes('education')) {
+                        rawSkillsText += "\n" + cleanAfter;
+                    }
                 }
             }
         });

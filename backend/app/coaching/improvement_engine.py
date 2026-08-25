@@ -91,8 +91,8 @@ def generate_improvement_plan(resume: Resume, job: Job, job_match: JobMatch = No
             "title": "Highlight Practical Project Accomplishments (Fresh Candidate)",
             "detail": "No formal work experience was detected. Emphasize project leadership, open-source contributions, or internship highlights.",
             "reason": "Recruiters look for practical proof of execution when work experience is limited.",
-            "before_text": "Projects: Weather Forecast Website",
-            "after_text": "Projects: Weather Forecast Website (Deployed web app handling live API data with 99% uptime)",
+            "before_text": "Weather Forecast Website",
+            "after_text": "Weather Forecast Website (Deployed web app handling live API data with 99% uptime)",
             "impact": "Improves recruiter engagement for entry-level engineering roles",
             "confidence": 0.90
         })
