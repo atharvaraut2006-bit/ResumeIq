@@ -153,42 +153,44 @@ def generate_optimized_resume_version(
         ))
 
     # 5. Education & Coursework Formatting
-    edu_raw = parsed_optimized.get('education', [])
-    if isinstance(edu_raw, list) and len(edu_raw) > 0:
-        edu0 = edu_raw[0]
-        if isinstance(edu0, dict):
-            orig_edu_text = f"{edu0.get('degree', 'Degree')} - {edu0.get('institution', 'University')} ({edu0.get('year', 'Recent')})"
-            if edu0.get('gpa'): orig_edu_text += f" [CGPA/GPA: {edu0.get('gpa')}]"
-        else:
-            orig_edu_text = str(edu0)
-        
-        new_edu_text = f"{orig_edu_text} | Key Coursework: Data Structures, Algorithms, Software Engineering, Database Systems."
-        
-        db.session.add(ResumeChange(
-            version_id=new_version.id,
-            section='education',
-            original_text=orig_edu_text,
-            new_text=new_edu_text,
-            change_type='formatting',
-            reason="Added relevant computer science & engineering coursework keywords for ATS education section parsing.",
-            impact='Medium'
-        ))
+    if 'education' in sections_to_optimize:
+        edu_raw = parsed_optimized.get('education', [])
+        if isinstance(edu_raw, list) and len(edu_raw) > 0:
+            edu0 = edu_raw[0]
+            if isinstance(edu0, dict):
+                orig_edu_text = f"{edu0.get('degree', 'Degree')} - {edu0.get('institution', 'University')} ({edu0.get('year', 'Recent')})"
+                if edu0.get('gpa'): orig_edu_text += f" [CGPA/GPA: {edu0.get('gpa')}]"
+            else:
+                orig_edu_text = str(edu0)
+            
+            new_edu_text = f"{orig_edu_text} | Key Coursework: Data Structures, Algorithms, Software Engineering, Database Systems."
+            
+            db.session.add(ResumeChange(
+                version_id=new_version.id,
+                section='education',
+                original_text=orig_edu_text,
+                new_text=new_edu_text,
+                change_type='formatting',
+                reason="Added relevant computer science & engineering coursework keywords for ATS education section parsing.",
+                impact='Medium'
+            ))
 
     # 6. Certifications & Achievements Optimization
-    certs_raw = parsed_optimized.get('certifications', []) or parsed_optimized.get('achievements', [])
-    if isinstance(certs_raw, list) and len(certs_raw) > 0:
-        orig_cert_str = ", ".join([str(c.get('name') if isinstance(c, dict) else c) for c in certs_raw[:3]])
-        new_cert_str = f"{orig_cert_str} (Verified Technical Knowledge & Excellence)"
-        
-        db.session.add(ResumeChange(
-            version_id=new_version.id,
-            section='certifications',
-            original_text=orig_cert_str,
-            new_text=new_cert_str,
-            change_type='formatting',
-            reason="Standardized certification titles for machine-readable verification.",
-            impact='Low'
-        ))
+    if 'certifications' in sections_to_optimize:
+        certs_raw = parsed_optimized.get('certifications', []) or parsed_optimized.get('achievements', [])
+        if isinstance(certs_raw, list) and len(certs_raw) > 0:
+            orig_cert_str = ", ".join([str(c.get('name') if isinstance(c, dict) else c) for c in certs_raw[:3]])
+            new_cert_str = f"{orig_cert_str} (Verified Technical Knowledge & Excellence)"
+            
+            db.session.add(ResumeChange(
+                version_id=new_version.id,
+                section='certifications',
+                original_text=orig_cert_str,
+                new_text=new_cert_str,
+                change_type='formatting',
+                reason="Standardized certification titles for machine-readable verification.",
+                impact='Low'
+            ))
 
     new_version.parsed_data = json.dumps(parsed_optimized)
     db.session.commit()
