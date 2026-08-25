@@ -244,7 +244,46 @@ const ResumeDocumentPreview = ({
 
             {/* Sections in user-specified order */}
             <div className="doc-body-content">
-                {sectionsOrder.map(secKey => renderSectionContent(secKey))}
+                {resumeData.raw_text && !resumeData.is_edited ? (
+                    String(resumeData.raw_text).split('\n').map(l => l.trim()).filter(Boolean).map((line, idx) => {
+                        const cleanLine = line.replace(/^[•\-\*\s]+/, '').trim();
+                        const lower = cleanLine.toLowerCase();
+                        
+                        // Skip header info if already in contact bar
+                        if (email && lower.includes(email.toLowerCase())) return null;
+                        if (phone && lower.includes(phone.toLowerCase())) return null;
+                        if (name && lower.includes(name.toLowerCase())) return null;
+                        if (lower.includes('linkedin.com') || lower.includes('github.com')) return null;
+
+                        const isHeading = /^(TECHNICAL SKILLS|PROFESSIONAL SUMMARY|SUMMARY|WORK EXPERIENCE|EXPERIENCE|PROJECTS|KEY PROJECTS|EDUCATION|CERTIFICATIONS|ACHIEVEMENTS|PUBLICATIONS|POSITIONS OF RESPONSIBILITY|EXTRA-CURRICULAR ACTIVITIES):?$/i.test(cleanLine);
+
+                        if (isHeading) {
+                            return (
+                                <div key={idx} className="doc-section" style={{ marginTop: '0.8rem' }}>
+                                    <h4 className="doc-heading">{cleanLine.toUpperCase()}</h4>
+                                </div>
+                            );
+                        }
+
+                        if (/^[•\-\*]/.test(line) || /^[\w\s&/()\-+]+:/.test(cleanLine)) {
+                            if (cleanLine.includes(':')) {
+                                const parts = cleanLine.split(/:(.+)/);
+                                const cat = parts[0];
+                                const val = parts[1] || '';
+                                return (
+                                    <p key={idx} className="doc-bullet">
+                                        • <strong>{cat.trim()}:</strong> {val.trim()}
+                                    </p>
+                                );
+                            }
+                            return <p key={idx} className="doc-bullet">• {cleanLine}</p>;
+                        }
+
+                        return <p key={idx} className="doc-body">{cleanLine}</p>;
+                    })
+                ) : (
+                    sectionsOrder.map(secKey => renderSectionContent(secKey))
+                )}
             </div>
         </div>
     );

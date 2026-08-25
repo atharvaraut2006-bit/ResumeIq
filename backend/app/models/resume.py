@@ -26,6 +26,7 @@ class Resume(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'original_filename': self.original_filename,
+            'raw_text': self.raw_text,
             'validation_status': self.validation_status,
             'is_resume': self.is_resume,
             'resume_confidence': round(self.resume_confidence, 2),

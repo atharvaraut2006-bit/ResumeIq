@@ -133,6 +133,7 @@ def parse_resume_route(resume_id):
         return jsonify({
             "success": True,
             "resume_id": resume_id,
+            "raw_text": resume.raw_text,
             "parsed_resume": parsed_data
         }), 200
         

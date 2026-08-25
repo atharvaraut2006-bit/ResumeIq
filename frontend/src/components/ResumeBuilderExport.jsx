@@ -58,7 +58,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
             : { raw: value, [fieldName]: value };
         
         currentList[itemIdx] = updatedItem;
-        onUpdateResumeData({ ...resumeData, [sectionKey]: currentList });
+        onUpdateResumeData({ ...resumeData, [sectionKey]: currentList, is_edited: true });
     };
 
     useEffect(() => {
