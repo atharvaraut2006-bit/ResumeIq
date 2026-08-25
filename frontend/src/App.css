@@ -10,9 +10,9 @@ body {
 }
 
 .app-container {
-  max-width: 1380px;
+  max-width: 1540px;
   margin: 0 auto;
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
 }
 
 .app-header {
@@ -229,7 +229,14 @@ body {
   width: 100%;
 }
 
-.resume-col, .job-col {
+.resume-col {
+  flex: 1.25;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.job-col {
   flex: 1;
   min-width: 0;
   display: flex;
