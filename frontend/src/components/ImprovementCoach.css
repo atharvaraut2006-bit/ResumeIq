@@ -338,6 +338,25 @@
     background-color: #e2e8f0;
 }
 
+.btn-unselect-rec {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.2s ease;
+}
+
+.btn-unselect-rec:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
 /* Learning Suggestions Panel */
 .learning-suggestions-panel {
     background: #ffffff;

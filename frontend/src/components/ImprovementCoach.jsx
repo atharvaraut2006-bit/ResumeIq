@@ -98,6 +98,19 @@ const ImprovementCoach = ({
         setAcceptedRecs(prev => (Array.isArray(prev) ? prev.filter(r => r.id !== recId) : []));
     };
 
+    const handleUnselectRecommendation = (recId) => {
+        if (planData && planData.recommendations) {
+            const updatedRecs = planData.recommendations.map(r => 
+                r.id === recId ? { ...r, status: 'pending' } : r
+            );
+            setPlanData({
+                ...planData,
+                recommendations: updatedRecs
+            });
+        }
+        setAcceptedRecs(prev => (Array.isArray(prev) ? prev.filter(r => r.id !== recId) : []));
+    };
+
     const handleApplyAllAndRedirect = () => {
         if (!resumeData || !onUpdateResumeData) {
             if (onNavigateToExport) onNavigateToExport();
@@ -324,8 +337,6 @@ const ImprovementCoach = ({
                                 <div className="rec-badge-group">
                                     <span className={`priority-pill ${(rec.priority || 'medium').toLowerCase()}`}>{rec.priority || 'MEDIUM'}</span>
                                 </div>
-                                {rec.status === 'accepted' && <span className="status-tag accepted">✓ ACCEPTED</span>}
-                                {rec.status === 'rejected' && <span className="status-tag rejected">✕ DISMISSED</span>}
                             </div>
 
                             <h4 className="rec-title">{rec.title}</h4>
@@ -345,8 +356,28 @@ const ImprovementCoach = ({
                                 </div>
                             )}
 
-                            {/* Action Buttons - Always rendered when not accepted or rejected */}
-                            {rec.status !== 'accepted' && rec.status !== 'rejected' && (
+                            {/* Action Buttons */}
+                            {rec.status === 'accepted' ? (
+                                <div className="rec-actions-bar">
+                                    <span className="status-tag accepted">✓ ACCEPTED</span>
+                                    <button 
+                                        className="btn-unselect-rec" 
+                                        onClick={() => handleUnselectRecommendation(rec.id)}
+                                    >
+                                        ↩ Unselect Option
+                                    </button>
+                                </div>
+                            ) : rec.status === 'rejected' ? (
+                                <div className="rec-actions-bar">
+                                    <span className="status-tag rejected">✕ DISMISSED</span>
+                                    <button 
+                                        className="btn-unselect-rec" 
+                                        onClick={() => handleUnselectRecommendation(rec.id)}
+                                    >
+                                        ↩ Re-enable
+                                    </button>
+                                </div>
+                            ) : (
                                 <div className="rec-actions-bar">
                                     <button 
                                         className="btn-apply-rec" 
