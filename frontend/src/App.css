@@ -224,7 +224,7 @@ body {
 
 .split-view {
   display: flex;
-  gap: 0;
+  gap: 0.5rem;
   align-items: stretch;
   width: 100%;
 }
