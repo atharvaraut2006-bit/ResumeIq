@@ -399,10 +399,6 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     <label>Pre-Export ATS Check</label>
                                     <strong className="green">{atsCheckScore} / 100</strong>
                                 </div>
-                                <div className="metric-chip">
-                                    <label>Version</label>
-                                    <strong>V2 (Finalized)</strong>
-                                </div>
                             </div>
 
                             <div className="ats-precheck-notice">

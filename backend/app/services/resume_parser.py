@@ -36,17 +36,16 @@ def extract_sections(text: str) -> Dict[str, str]:
     Splits text into logical sections based on common headings.
     """
     sections = {}
-    current_section = "contact" # Assume first part is contact/header
+    current_section = "contact"
     current_content = []
     
-    # Common section headings and their normalized names
     headings_map = {
-        r"SUMMARY|PROFESSIONAL SUMMARY|OBJECTIVE|CAREER OBJECTIVE": "summary",
-        r"EDUCATION|ACADEMIC BACKGROUND|ACADEMICS": "education",
-        r"EXPERIENCE|WORK EXPERIENCE|PROFESSIONAL EXPERIENCE|EMPLOYMENT HISTORY|WORK HISTORY|INTERNSHIP|INTERNSHIPS": "experience",
-        r"SKILLS|TECHNICAL SKILLS|CORE COMPETENCIES": "skills",
-        r"PROJECTS|ACADEMIC PROJECTS|PERSONAL PROJECTS": "projects",
-        r"CERTIFICATIONS|CERTIFICATES": "certifications",
+        r"SUMMARY|PROFESSIONAL SUMMARY|PROFILE|PROFILE SUMMARY|ABOUT ME|ABOUT|CAREER OBJECTIVE|OBJECTIVE|PROFESSIONAL RESUME|PROFESSIONAL OVERVIEW|CAREER OVERVIEW|OVERVIEW|BACKGROUND|SUMMARY OF QUALIFICATIONS|PROFILE STATEMENT": "summary",
+        r"EDUCATION|ACADEMIC BACKGROUND|ACADEMICS|QUALIFICATIONS": "education",
+        r"EXPERIENCE|WORK EXPERIENCE|PROFESSIONAL EXPERIENCE|EMPLOYMENT HISTORY|WORK HISTORY|INTERNSHIP|INTERNSHIPS|EMPLOYMENT": "experience",
+        r"SKILLS|TECHNICAL SKILLS|CORE COMPETENCIES|TECHNICAL PROFICIENCIES|SKILLS & TECHNOLOGIES": "skills",
+        r"PROJECTS|ACADEMIC PROJECTS|PERSONAL PROJECTS|KEY PROJECTS": "projects",
+        r"CERTIFICATIONS|CERTIFICATES|LICENSES": "certifications",
         r"ACHIEVEMENTS|AWARDS|HONORS": "achievements",
         r"PUBLICATIONS": "publications",
         r"POSITIONS OF RESPONSIBILITY|LEADERSHIP": "positions_of_responsibility",
@@ -62,14 +61,11 @@ def extract_sections(text: str) -> Dict[str, str]:
             
         is_heading = False
         
-        # Check if line is a heading (usually all caps or matches known heading)
-        if len(line_clean) < 40: # Headings are usually short
+        if len(line_clean) < 60:
             line_upper = line_clean.upper()
             
             for pattern, normalized_name in headings_map.items():
-                if re.fullmatch(r"^(" + pattern + r")$", line_upper) or \
-                   re.fullmatch(r"^(" + pattern + r")\s*[:-]?$", line_upper):
-                    
+                if re.search(r"^\s*([•\-\d\.]*\s*)?(" + pattern + r")\s*[:-]?$", line_upper):
                     if current_content:
                         sections[current_section] = "\n".join(current_content).strip()
                     
@@ -81,9 +77,21 @@ def extract_sections(text: str) -> Dict[str, str]:
         if not is_heading:
             current_content.append(line_clean)
             
-    # Save the last section
     if current_content:
         sections[current_section] = "\n".join(current_content).strip()
+        
+    # Fallback Summary extraction
+    if not sections.get("summary") and sections.get("contact"):
+        contact_lines = [l for l in sections["contact"].split('\n') if l.strip()]
+        non_meta_lines = [
+            l for l in contact_lines 
+            if '@' not in l and not re.search(r'\d{10}', re.sub(r'[-.\s]', '', l)) 
+            and not re.search(r'linkedin|github|http', l.lower())
+        ]
+        if len(non_meta_lines) >= 2:
+            potential_summary = " ".join(non_meta_lines[1:]).strip()
+            if len(potential_summary) > 25:
+                sections["summary"] = potential_summary
         
     return sections
 
