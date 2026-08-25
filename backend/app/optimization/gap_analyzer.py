@@ -29,6 +29,15 @@ def analyze_gaps(job_match: JobMatch):
                 "category": sm.category
             }
             missing_gaps.append(gap)
+        elif sm.match_type == "semantic" and sm.category == "soft":
+            if sm.confidence and sm.confidence < 0.80:
+                weak_evidence.append({
+                    "skill": sm.skill_name,
+                    "evidence_found": sm.evidence,
+                    "reason": f"Limited evidence for {sm.skill_name} detected.",
+                    "action": f"Strengthen the phrasing to clearly demonstrate {sm.skill_name}.",
+                    "priority": "low"
+                })
 
     for gap in missing_gaps:
         sname = gap["skill"].lower()
@@ -53,16 +62,6 @@ def analyze_gaps(job_match: JobMatch):
             else:
                 item["priority"] = "low"
                 low_priority.append(item)
-                
-        elif sm.match_type == "semantic" and sm.category == "soft":
-            if sm.confidence and sm.confidence < 0.80:
-                weak_evidence.append({
-                    "skill": sm.skill_name,
-                    "evidence_found": sm.evidence,
-                    "reason": f"Limited evidence for {sm.skill_name} detected.",
-                    "action": f"Strengthen the phrasing to clearly demonstrate {sm.skill_name}.",
-                    "priority": "low"
-                })
                 
     # Add non-skill gaps
     experience_gaps = []
