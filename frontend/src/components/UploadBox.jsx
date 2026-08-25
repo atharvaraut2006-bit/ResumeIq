@@ -70,7 +70,7 @@ const UploadBox = ({ onUploadSuccess }) => {
             
         } catch (err) {
             setValidationFailed(true);
-            const msg = err.error?.message || 'Please check your uploaded file. We couldn\'t identify this document as a resume. Please upload a valid resume and try again.';
+            const msg = err.message || err.error?.message || 'An error occurred during resume processing. Please try again.';
             setError(msg);
         } finally {
             setUploading(false);
