@@ -69,10 +69,10 @@ const LandingPage = ({ onUploadSuccess, onOpenAuthModal, user, isAuthenticated, 
 
           <div className="hero-cta-group">
             <button className="btn-primary-cta" onClick={scrollToUpload}>
-              Analyze My Resume →
+              Analyze My Resume
             </button>
             <button className="btn-secondary-cta" onClick={() => scrollToSection('how-it-works')}>
-              See How It Works ↓
+              See How It Works
             </button>
           </div>
 
@@ -325,7 +325,7 @@ const LandingPage = ({ onUploadSuccess, onOpenAuthModal, user, isAuthenticated, 
           <h2>Ready to Build a Better Resume?</h2>
           <p>Find out what your resume is missing and make it job-ready in minutes.</p>
           <button className="btn-primary-cta" onClick={scrollToUpload}>
-            Analyze My Resume →
+            Analyze My Resume
           </button>
         </div>
       </section>

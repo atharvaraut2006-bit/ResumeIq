@@ -63,10 +63,7 @@ const ResumePreview = ({ data, skills, filename, onReset }) => {
                             <ul>
                                 {catSkills.map((rs, idx) => (
                                     <li key={idx}>
-                                        <strong>{rs.skill.canonical_name}</strong>
-                                        <span className="skill-meta">
-                                            ({(rs.confidence * 100).toFixed(0)}% confidence • {rs.evidence_type})
-                                        </span>
+                                        <span className="skill-name-plain">{rs.skill.canonical_name}</span>
                                     </li>
                                 ))}
                             </ul>

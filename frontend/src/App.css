@@ -224,14 +224,16 @@ body {
 
 .split-view {
   display: flex;
-  gap: 2rem;
-  align-items: flex-start;
+  gap: 1.75rem;
+  align-items: stretch;
   width: 100%;
 }
 
 .resume-col, .job-col {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 900px) {

@@ -129,7 +129,7 @@ const MatchResults = ({ matchData, onAnalyzeAnother }) => {
             <div className="match-header">
                 <div>
                     <h3>{job?.title || "Unknown Title"}</h3>
-                    <p className="company-text">Company: <strong>{job?.company || "Unknown Company"}</strong></p>
+                    <p className="company-text"><strong>Company: {job?.company || "Unknown Company"}</strong></p>
                 </div>
                 
                 <CircularScoreGauge 
