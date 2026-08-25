@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 INITIAL_KNOWLEDGE_BASE = [
     {
         "canonical_name": "JavaScript",
-        "category": "Programming Languages",
+        "category": "Web Development",
         "aliases": ["js", "javascript", "java script"]
     },
     {
