@@ -331,6 +331,8 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                             templateId={selectedTemplate}
                             sectionsOrder={sectionsOrder}
                             includedSections={includedSections}
+                            onUpdateResumeData={onUpdateResumeData}
+                            isEditable={true}
                         />
                     </div>
                 </div>

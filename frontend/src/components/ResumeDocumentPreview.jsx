@@ -47,7 +47,9 @@ const ResumeDocumentPreview = ({
     resumeData, 
     templateId = 'ats_focused', 
     sectionsOrder = ['summary', 'skills', 'experience', 'projects', 'education', 'certifications', 'achievements'], 
-    includedSections = ['summary', 'skills', 'experience', 'projects', 'education', 'certifications', 'achievements'] 
+    includedSections = ['summary', 'skills', 'experience', 'projects', 'education', 'certifications', 'achievements'],
+    onUpdateResumeData,
+    isEditable = true
 }) => {
     if (!resumeData) return null;
 
@@ -59,6 +61,17 @@ const ResumeDocumentPreview = ({
     const github = contact.github || "";
 
     const contactParts = [phone, email, linkedin, github].filter(Boolean);
+
+    const handlePaperInput = (e) => {
+        if (onUpdateResumeData && resumeData) {
+            const innerText = e.currentTarget.innerText;
+            onUpdateResumeData({
+                ...resumeData,
+                raw_text: innerText,
+                is_edited: true
+            });
+        }
+    };
 
     const renderSectionContent = (secKey) => {
         if (!includedSections.includes(secKey)) return null;
@@ -100,12 +113,12 @@ const ResumeDocumentPreview = ({
                     });
                 });
 
-                // Check skillsList for new user-added or confirmed skills (exclude projects)
+                // Check skillsList for new user-added skills (exclude project names)
                 let extraSkills = [];
                 if (Array.isArray(skillsList)) {
                     skillsList.forEach(s => {
-                        const name = typeof s === 'object' ? (s.canonical_name || s.skill_name || String(s)) : String(s);
-                        const cleanName = (name || '').trim();
+                        const nameStr = typeof s === 'object' ? (s.canonical_name || s.skill_name || String(s)) : String(s);
+                        const cleanName = (nameStr || '').trim();
                         const lowerName = cleanName.toLowerCase();
                         if (cleanName && !lowerName.includes('project') && !lowerName.includes('website') && !existingTokens.has(lowerName)) {
                             extraSkills.push(cleanName);
@@ -113,10 +126,10 @@ const ResumeDocumentPreview = ({
                     });
                 } else if (typeof skillsList === 'string' && skillsList.trim()) {
                     skillsList.split(',').forEach(s => {
-                        const name = s.trim();
-                        const lowerName = name.toLowerCase();
-                        if (name && !lowerName.includes('project') && !lowerName.includes('website') && !existingTokens.has(lowerName)) {
-                            extraSkills.push(name);
+                        const nameStr = s.trim();
+                        const lowerName = nameStr.toLowerCase();
+                        if (nameStr && !lowerName.includes('project') && !lowerName.includes('website') && !existingTokens.has(lowerName)) {
+                            extraSkills.push(nameStr);
                         }
                     });
                 }
@@ -138,21 +151,19 @@ const ResumeDocumentPreview = ({
                 return (
                     <div key="skills" className="doc-section">
                         <h4 className="doc-heading">TECHNICAL SKILLS</h4>
-                        <div className="doc-skills-list">
-                            {items.map((item, idx) => {
-                                if (item.includes(':')) {
-                                    const parts = item.split(/:(.+)/);
-                                    const cat = parts[0];
-                                    const val = parts[1] || '';
-                                    return (
-                                        <p key={idx} className="doc-bullet">
-                                            • <strong>{cat.trim()}:</strong> {val.trim()}
-                                        </p>
-                                    );
-                                }
-                                return <p key={idx} className="doc-bullet">• {item}</p>;
-                            })}
-                        </div>
+                        {items.map((item, idx) => {
+                            if (item.includes(':')) {
+                                const parts = item.split(/:(.+)/);
+                                const cat = parts[0];
+                                const val = parts[1] || '';
+                                return (
+                                    <p key={idx} className="doc-bullet">
+                                        • <strong>{cat.trim()}:</strong> {val.trim()}
+                                    </p>
+                                );
+                            }
+                            return <p key={idx} className="doc-bullet">• {item}</p>;
+                        })}
                     </div>
                 );
             }
@@ -163,13 +174,23 @@ const ResumeDocumentPreview = ({
                 return (
                     <div key="experience" className="doc-section">
                         <h4 className="doc-heading">WORK EXPERIENCE</h4>
-                        {expList.map((e, idx) => {
-                            const eText = e.raw || e.description || "";
-                            if (!eText) return null;
-                            const bullets = parseBulletParagraphs(eText);
-                            return bullets.map((cleanText, bIdx) => (
-                                <p key={`${idx}-${bIdx}`} className="doc-bullet">• {cleanText}</p>
-                            ));
+                        {expList.map((exp, idx) => {
+                            const title = exp.title || exp.role || "Software Engineer";
+                            const company = exp.company || exp.organization || "";
+                            const dates = exp.dates || exp.duration || "";
+                            const bullets = parseBulletParagraphs(exp.raw || exp.description || "");
+
+                            return (
+                                <div key={idx} className="doc-exp-block">
+                                    <div className="doc-exp-header">
+                                        <span className="doc-exp-title"><strong>{title}</strong> {company ? `| ${company}` : ''}</span>
+                                        {dates && <span className="doc-exp-dates">{dates}</span>}
+                                    </div>
+                                    {bullets.map((bText, bIdx) => (
+                                        <p key={bIdx} className="doc-bullet">• {bText}</p>
+                                    ))}
+                                </div>
+                            );
                         })}
                     </div>
                 );
@@ -187,7 +208,7 @@ const ResumeDocumentPreview = ({
                             const bullets = parseBulletParagraphs(pDesc);
                             return (
                                 <div key={idx} className="doc-project-block">
-                                    {pName && <div className="doc-project-title">{pName}</div>}
+                                    {pName && <div className="doc-project-title"><strong>{pName}</strong></div>}
                                     {bullets.map((cleanB, bIdx) => (
                                         <p key={bIdx} className="doc-bullet">• {cleanB}</p>
                                     ))}
@@ -206,10 +227,18 @@ const ResumeDocumentPreview = ({
                         <h4 className="doc-heading">EDUCATION</h4>
                         {eduList.map((e, idx) => {
                             const eText = e.raw || `${e.degree || ''} - ${e.institution || ''}`;
-                            const bullets = parseBulletParagraphs(eText);
-                            return bullets.map((cleanText, bIdx) => (
-                                <p key={`${idx}-${bIdx}`} className="doc-bullet">• {cleanText}</p>
-                            ));
+                            const lines = String(eText).split('\n').map(l => l.trim()).filter(Boolean);
+                            return (
+                                <div key={idx} style={{ marginBottom: '0.4rem' }}>
+                                    {lines.map((line, bIdx) => {
+                                        const cleanLine = line.replace(/^[•\-\*\s]+/, '').trim();
+                                        if (/^(cgpa|gpa|grade|score|hsc|ssc)/i.test(cleanLine)) {
+                                            return <p key={bIdx} className="doc-body" style={{ margin: '0.1rem 0', color: '#475569' }}>{cleanLine}</p>;
+                                        }
+                                        return <p key={bIdx} className="doc-body" style={{ margin: '0.15rem 0', fontWeight: bIdx === 0 ? '600' : '400' }}>{cleanLine}</p>;
+                                    })}
+                                </div>
+                            );
                         })}
                     </div>
                 );
@@ -224,7 +253,7 @@ const ResumeDocumentPreview = ({
                         {certList.map((c, idx) => {
                             const cText = c.raw || c.name || String(c);
                             const cleanText = cText.replace(/^[•\-\*\s]+/, '').trim();
-                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
+                            return <p key={idx} className="doc-body" style={{ margin: '0.2rem 0' }}>{cleanText}</p>;
                         })}
                     </div>
                 );
@@ -239,7 +268,7 @@ const ResumeDocumentPreview = ({
                         {achList.map((a, idx) => {
                             const aText = a.raw || String(a);
                             const cleanText = aText.replace(/^[•\-\*\s]+/, '').trim();
-                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
+                            return <p key={idx} className="doc-body" style={{ margin: '0.2rem 0' }}>{cleanText}</p>;
                         })}
                     </div>
                 );
@@ -251,61 +280,76 @@ const ResumeDocumentPreview = ({
     };
 
     return (
-        <div className={`doc-preview-paper template-${templateId}`}>
-            {/* Header */}
-            <div className="doc-header">
-                <h1 className="doc-name">{name.toUpperCase()}</h1>
-                {contactParts.length > 0 && (
-                    <div className="doc-contact-line">
-                        {contactParts.join('  •  ')}
-                    </div>
-                )}
-                <div className="doc-divider"></div>
-            </div>
+        <div className="editable-paper-wrapper">
+            {isEditable && (
+                <div className="editable-hint-badge">
+                    ✏️ Live Typable Editor — Click anywhere on the resume to edit text directly!
+                </div>
+            )}
+            <div 
+                className={`doc-preview-paper template-${templateId}`}
+                contentEditable={isEditable}
+                suppressContentEditableWarning={true}
+                onInput={handlePaperInput}
+            >
+                {/* Header */}
+                <div className="doc-header">
+                    <h1 className="doc-name">{name.toUpperCase()}</h1>
+                    {contactParts.length > 0 && (
+                        <div className="doc-contact-line">
+                            {contactParts.join('  •  ')}
+                        </div>
+                    )}
+                    <div className="doc-divider"></div>
+                </div>
 
-            {/* Sections in user-specified order */}
-            <div className="doc-body-content">
-                {resumeData.raw_text && !resumeData.is_edited ? (
-                    String(resumeData.raw_text).split('\n').map(l => l.trim()).filter(Boolean).map((line, idx) => {
-                        const cleanLine = line.replace(/^[•\-\*\s]+/, '').trim();
-                        const lower = cleanLine.toLowerCase();
-                        
-                        // Skip header info if already in contact bar
-                        if (email && lower.includes(email.toLowerCase())) return null;
-                        if (phone && lower.replace(/[-.\s]/g, '').includes(phone.replace(/[-.\s]/g, ''))) return null;
-                        if (name && lower.includes(name.toLowerCase())) return null;
-                        if (lower === 'linkedin' || lower === 'github' || lower.includes('linkedin.com') || lower.includes('github.com')) return null;
+                {/* Sections in user-specified order */}
+                <div className="doc-body-content">
+                    {resumeData.raw_text && !resumeData.is_edited ? (
+                        String(resumeData.raw_text).split('\n').map(l => l.trim()).filter(Boolean).map((line, idx) => {
+                            const cleanLine = line.replace(/^[•\-\*\s]+/, '').trim();
+                            const lower = cleanLine.toLowerCase();
+                            
+                            // Skip header info if already in contact bar
+                            if (email && lower.includes(email.toLowerCase())) return null;
+                            if (phone && lower.replace(/[-.\s]/g, '').includes(phone.replace(/[-.\s]/g, ''))) return null;
+                            if (name && lower.includes(name.toLowerCase())) return null;
+                            if (lower === 'linkedin' || lower === 'github' || lower.includes('linkedin.com') || lower.includes('github.com')) return null;
 
-                        const cleanHeadingCheck = cleanLine.replace(/[^A-Za-z0-9\s&]/g, '').trim().toUpperCase();
-                        const isHeading = KNOWN_HEADINGS_SET.has(cleanHeadingCheck);
+                            const cleanHeadingCheck = cleanLine.replace(/[^A-Za-z0-9\s&]/g, '').trim().toUpperCase();
+                            const isHeading = KNOWN_HEADINGS_SET.has(cleanHeadingCheck);
 
-                        if (isHeading) {
-                            return (
-                                <div key={idx} className="doc-section" style={{ marginTop: '0.8rem' }}>
-                                    <h4 className="doc-heading">{cleanLine.toUpperCase()}</h4>
-                                </div>
-                            );
-                        }
-
-                        if (/^[•\-\*]/.test(line) || /^(Tech Stack|Languages|Database|Software Engineering|Core Concepts|Web & Tools|Machine Learning|Agentic AI|Frameworks|Cloud):/i.test(cleanLine)) {
-                            if (cleanLine.includes(':')) {
-                                const parts = cleanLine.split(/:(.+)/);
-                                const cat = parts[0];
-                                const val = parts[1] || '';
+                            if (isHeading) {
                                 return (
-                                    <p key={idx} className="doc-bullet">
-                                        • <strong>{cat.trim()}:</strong> {val.trim()}
-                                    </p>
+                                    <div key={idx} className="doc-section" style={{ marginTop: '0.8rem' }}>
+                                        <h4 className="doc-heading">{cleanLine.toUpperCase()}</h4>
+                                    </div>
                                 );
                             }
-                            return <p key={idx} className="doc-bullet">• {cleanLine}</p>;
-                        }
 
-                        return <p key={idx} className="doc-body">{cleanLine}</p>;
-                    })
-                ) : (
-                    sectionsOrder.map(secKey => renderSectionContent(secKey))
-                )}
+                            // Only render bullet if original line explicitly started with a bullet character
+                            const hasExplicitBullet = /^[•\-\*]/.test(line);
+
+                            if (hasExplicitBullet || /^(Tech Stack|Languages|Database|Software Engineering|Core Concepts|Web & Tools|Machine Learning|Agentic AI|Frameworks|Cloud):/i.test(cleanLine)) {
+                                if (cleanLine.includes(':')) {
+                                    const parts = cleanLine.split(/:(.+)/);
+                                    const cat = parts[0];
+                                    const val = parts[1] || '';
+                                    return (
+                                        <p key={idx} className="doc-bullet">
+                                            • <strong>{cat.trim()}:</strong> {val.trim()}
+                                        </p>
+                                    );
+                                }
+                                return <p key={idx} className="doc-bullet">• {cleanLine}</p>;
+                            }
+
+                            return <p key={idx} className="doc-body">{cleanLine}</p>;
+                        })
+                    ) : (
+                        sectionsOrder.map(secKey => renderSectionContent(secKey))
+                    )}
+                </div>
             </div>
         </div>
     );

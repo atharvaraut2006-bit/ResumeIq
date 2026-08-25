@@ -1,3 +1,23 @@
+.editable-paper-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.editable-hint-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1d4ed8;
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+}
+
 .doc-preview-paper {
     background-color: #ffffff;
     width: 100%;
@@ -10,6 +30,18 @@
     text-align: left;
     font-family: 'Helvetica', 'Arial', sans-serif;
     color: #111827;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.doc-preview-paper[contenteditable="true"] {
+    outline: none;
+    cursor: text;
+}
+
+.doc-preview-paper[contenteditable="true"]:focus,
+.doc-preview-paper[contenteditable="true"]:hover {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
 /* Template Typography & Color Themes */
@@ -61,51 +93,68 @@
 .doc-contact-line {
     font-size: 0.85rem;
     color: #4b5563;
-    margin-bottom: 0.8rem;
 }
 
 .doc-divider {
-    height: 1px;
-    background-color: #e5e7eb;
-    margin-bottom: 1.2rem;
+    margin-top: 0.8rem;
+    border-bottom: 1px solid #e5e7eb;
 }
 
 /* Document Sections */
 .doc-section {
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
 }
 
 .doc-heading {
-    margin: 0 0 0.5rem 0;
     font-size: 0.95rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
-    padding-bottom: 0.2rem;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5rem 0;
+    padding-bottom: 0.15rem;
+    text-transform: uppercase;
 }
 
 .doc-body {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     line-height: 1.45;
-    color: #374151;
+    margin: 0 0 0.3rem 0;
+    color: #1f2937;
 }
 
 .doc-bullet {
-    margin: 0 0 0.35rem 0;
-    font-size: 0.86rem;
+    font-size: 0.85rem;
     line-height: 1.45;
+    margin: 0 0 0.25rem 0;
     color: #1f2937;
-    padding-left: 0.85rem;
-    text-indent: -0.85rem;
+    padding-left: 0.5rem;
 }
 
+/* Experience Block */
+.doc-exp-block {
+    margin-bottom: 0.6rem;
+}
+
+.doc-exp-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.doc-exp-dates {
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+/* Project Block */
 .doc-project-block {
     margin-bottom: 0.6rem;
 }
 
 .doc-project-title {
-    font-weight: 700;
-    font-size: 0.9rem;
-    color: #111827;
+    font-size: 0.88rem;
+    font-weight: 600;
     margin-bottom: 0.2rem;
 }
