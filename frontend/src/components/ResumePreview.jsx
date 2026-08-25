@@ -57,18 +57,20 @@ const ResumePreview = ({ data, skills, filename, onReset }) => {
                 <h4>Detected Skills</h4>
                 
                 {skillsByCategory && Object.keys(skillsByCategory).length > 0 ? (
-                    Object.entries(skillsByCategory).map(([category, catSkills]) => (
-                        <div key={category} className="skill-category">
-                            <h5>{category}</h5>
-                            <ul>
-                                {catSkills.map((rs, idx) => (
-                                    <li key={idx}>
-                                        <span className="skill-name-plain">{rs.skill.canonical_name}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))
+                    Object.entries(skillsByCategory)
+                        .filter(([category]) => category !== "Version Control")
+                        .map(([category, catSkills]) => (
+                            <div key={category} className="skill-category">
+                                <h5>{category}</h5>
+                                <ul>
+                                    {catSkills.map((rs, idx) => (
+                                        <li key={idx}>
+                                            <span className="skill-name-plain">{rs.skill.canonical_name}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))
                 ) : (
                     <p>No skills detected.</p>
                 )}

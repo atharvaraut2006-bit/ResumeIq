@@ -292,22 +292,22 @@ INITIAL_KNOWLEDGE_BASE = [
     },
     {
         "canonical_name": "Git",
-        "category": "Version Control",
+        "category": "Tools",
         "aliases": ["git"]
     },
     {
         "canonical_name": "GitHub",
-        "category": "Version Control",
+        "category": "Tools",
         "aliases": ["github"]
     },
     {
         "canonical_name": "GitLab",
-        "category": "Version Control",
+        "category": "Tools",
         "aliases": ["gitlab"]
     },
     {
         "canonical_name": "Bitbucket",
-        "category": "Version Control",
+        "category": "Tools",
         "aliases": ["bitbucket"]
     },
     {
@@ -362,6 +362,8 @@ def initialize_knowledge_base():
             )
             db.session.add(skill)
             db.session.flush()
+        else:
+            skill.category = skill_data["category"]
         
         for alias_name in skill_data["aliases"]:
             clean_alias = alias_name.lower()
