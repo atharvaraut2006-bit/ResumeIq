@@ -313,37 +313,37 @@ INITIAL_KNOWLEDGE_BASE = [
     {
         "canonical_name": "Operating Systems",
         "category": "Core Subjects",
-        "aliases": ["os", "operating systems", "operating system"]
+        "aliases": ["os", "operating systems", "operating system", "operating system (os)", "os (operating systems)"]
     },
     {
         "canonical_name": "DBMS",
         "category": "Core Subjects",
-        "aliases": ["dbms", "database management", "database management system", "database management systems"]
+        "aliases": ["dbms", "database management", "database management system", "database management systems", "dbms (database management system)", "database management system (dbms)"]
     },
     {
         "canonical_name": "Data Structures & Algorithms",
         "category": "Core Subjects",
-        "aliases": ["dsa", "data structures", "algorithms", "data structures & algorithms", "data structures and algorithms"]
+        "aliases": ["dsa", "data structures", "algorithms", "data structures & algorithms", "data structures and algorithms", "data structures & algorithm", "data structure and algorithm", "dsa (data structures and algorithms)", "data structures and algorithms (dsa)"]
     },
     {
         "canonical_name": "Computer Networks",
         "category": "Core Subjects",
-        "aliases": ["cn", "computer networks", "networking"]
+        "aliases": ["cn", "computer networks", "networking", "computer network", "computer networks (cn)"]
     },
     {
         "canonical_name": "Object-Oriented Programming",
         "category": "Core Subjects",
-        "aliases": ["oops", "oop", "object oriented programming", "object-oriented programming"]
+        "aliases": ["oops", "oop", "object oriented programming", "object-oriented programming", "oops (object oriented programming)", "object oriented programming (oops)", "oops/oop"]
     },
     {
         "canonical_name": "Software Engineering",
         "category": "Core Subjects",
-        "aliases": ["software engineering", "sdlc"]
+        "aliases": ["software engineering", "sdlc", "software development life cycle"]
     },
     {
         "canonical_name": "Web Technologies",
         "category": "Web Development",
-        "aliases": ["web technologies", "web development", "web dev"]
+        "aliases": ["web technologies", "web development", "web dev", "web technology"]
     }
 ]
 

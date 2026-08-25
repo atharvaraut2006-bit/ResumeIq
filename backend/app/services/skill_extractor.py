@@ -39,6 +39,8 @@ def extract_and_store_resume_skills(resume_id: int):
                 
     # 2. Extract inferred skills from other sections (Experience, Projects, Summary)
     sections_to_scan = {
+        "skills": skills_raw,
+        "education": _flatten_list(parsed_data.get("education", [])),
         "experience": _flatten_list(parsed_data.get("experience", [])),
         "projects": _flatten_list(parsed_data.get("projects", [])),
         "summary": parsed_data.get("summary", ""),
