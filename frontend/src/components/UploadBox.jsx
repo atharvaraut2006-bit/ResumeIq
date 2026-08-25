@@ -124,15 +124,15 @@ const UploadBox = ({ onUploadSuccess }) => {
                 </div>
             )}
 
-            {/* Validation Error Display */}
+            {/* Validation / Connection Error Display */}
             {validationFailed && (
                 <div className="validation-error-card">
                     <div className="ve-icon">⚠️</div>
-                    <h3>DOCUMENT VALIDATION FAILED</h3>
+                    <h3>{error?.toLowerCase().includes('server') || error?.toLowerCase().includes('network') || error?.toLowerCase().includes('connection') ? 'SERVER CONNECTION ISSUE' : 'DOCUMENT VALIDATION FAILED'}</h3>
                     <p className="ve-msg">{error}</p>
                     
-                    <button className="btn-reupload" onClick={handleResetUpload}>
-                        🔄 Try Uploading Another File
+                    <button className="btn-reupload" onClick={file ? handleUpload : handleResetUpload}>
+                        🔄 {file ? 'Retry Upload' : 'Try Uploading Another File'}
                     </button>
                 </div>
             )}
