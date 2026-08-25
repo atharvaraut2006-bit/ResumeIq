@@ -5,7 +5,7 @@ import './OptimizationDashboard.css';
 
 import { API_BASE_URL } from '../services/api';
 
-const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, renderBottomOnly, onVersionFinalized }) => {
+const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, renderBottomOnly, renderSkillGapsOnly, renderAtsOptimizationOnly, onVersionFinalized }) => {
     const [optData, setOptData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -485,7 +485,7 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
 
     return (
         <div className="optimization-dashboard">
-            {renderTopOnly ? renderTop() : renderBottomOnly ? renderBottom() : (
+            {(renderSkillGapsOnly || renderBottomOnly) ? renderBottom() : (renderAtsOptimizationOnly || renderTopOnly) ? renderTop() : (
                 <>
                     {renderTop()}
                     {renderBottom()}

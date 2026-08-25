@@ -199,31 +199,24 @@ function App() {
                 </div>
               </div>
             ) : activeTab === 'optimize' ? (
-              /* Phase 8/9/10 Full Optimization View */
-              <div className="optimization-full-view">
-                <div className="split-view top-split">
-                  <div className="resume-col">
-                    <ResumePreview data={resumeData} skills={resumeSkills} filename={filename} onReset={resetAll} />
-                  </div>
-
-                  <div className="job-col">
-                    <OptimizationDashboard 
-                      resumeId={resumeData.id} 
-                      jobId={matchData.job_id || matchData.job?.id} 
-                      jobMatchId={matchData.job_match_id} 
-                      renderTopOnly={true}
-                      onVersionFinalized={handleVersionFinalized}
-                    />
-                  </div>
-                </div>
-
-                {/* Bottom Full-Width Section for Skill Gaps & Actionable Improvements */}
-                <div className="full-width-bottom-section">
+              /* Phase 8/9/10 Optimization & Skill Gap 50:50 View */
+              <div className="split-view">
+                <div className="resume-col">
                   <OptimizationDashboard 
                     resumeId={resumeData.id} 
                     jobId={matchData.job_id || matchData.job?.id} 
                     jobMatchId={matchData.job_match_id} 
-                    renderBottomOnly={true}
+                    renderSkillGapsOnly={true}
+                    onVersionFinalized={handleVersionFinalized}
+                  />
+                </div>
+
+                <div className="job-col">
+                  <OptimizationDashboard 
+                    resumeId={resumeData.id} 
+                    jobId={matchData.job_id || matchData.job?.id} 
+                    jobMatchId={matchData.job_match_id} 
+                    renderAtsOptimizationOnly={true}
                     onVersionFinalized={handleVersionFinalized}
                   />
                 </div>
