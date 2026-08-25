@@ -135,26 +135,46 @@ def generate_pdf(
                 story.append(Spacer(1, 4))
 
         elif section_key == 'skills':
-            skills_raw = resume_data.get('skills_raw') or resume_data.get('skills')
+            skills_raw = resume_data.get('skills_raw')
+            skills_list = resume_data.get('skills')
+            items = []
+            
             if skills_raw:
+                items = [i.strip() for i in str(skills_raw).replace('\n', '•').split('•') if i.strip()]
+                
+            existing_tokens = set()
+            for item in items:
+                text = item.split(':', 1)[1] if ':' in item else item
+                for s in text.lower().replace('|', ',').split(','):
+                    if s.strip():
+                        existing_tokens.add(s.strip())
+                        
+            extra_skills = []
+            if isinstance(skills_list, list):
+                for s in skills_list:
+                    name = s.get('canonical_name') or s.get('skill_name') or str(s) if isinstance(s, dict) else str(s)
+                    if name and name.strip().lower() not in existing_tokens:
+                        extra_skills.append(name.strip())
+            elif isinstance(skills_list, str) and skills_list.strip():
+                for s in skills_list.split(','):
+                    if s.strip() and s.strip().lower() not in existing_tokens:
+                        extra_skills.append(s.strip())
+                        
+            if extra_skills:
+                items.append(f"Additional Verified Skills: {', '.join(extra_skills)}")
+                
+            if not items and skills_list:
+                items = [", ".join([s.get('canonical_name', str(s)) if isinstance(s, dict) else str(s) for s in skills_list]) if isinstance(skills_list, list) else str(skills_list)]
+                
+            if items:
                 story.append(Paragraph("TECHNICAL SKILLS", heading_style))
-                if isinstance(skills_raw, list):
-                    skills_str = ", ".join([s.get('canonical_name', s.get('skill_name', str(s))) for s in skills_raw if isinstance(s, dict)])
-                    story.append(Paragraph(f"• {skills_str}", bullet_style))
-                else:
-                    skills_str = str(skills_raw)
-                    # Split by bullet points or newlines for clean indentation
-                    items = [i.strip() for i in skills_str.replace('\n', '•').split('•') if i.strip()]
-                    if items:
-                        for item in items:
-                            if ':' in item:
-                                cat, val = item.split(':', 1)
-                                formatted_item = f"<b>{cat.strip()}:</b> {val.strip()}"
-                            else:
-                                formatted_item = item
-                            story.append(Paragraph(f"• {formatted_item}", bullet_style))
+                for item in items:
+                    if ':' in item:
+                        cat, val = item.split(':', 1)
+                        formatted_item = f"<b>{cat.strip()}:</b> {val.strip()}"
                     else:
-                        story.append(Paragraph(f"• {skills_str}", bullet_style))
+                        formatted_item = item
+                    story.append(Paragraph(f"• {formatted_item}", bullet_style))
                 story.append(Spacer(1, 4))
 
         elif section_key == 'experience':

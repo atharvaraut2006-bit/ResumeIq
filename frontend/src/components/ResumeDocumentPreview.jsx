@@ -34,25 +34,66 @@ const ResumeDocumentPreview = ({
             }
 
             case 'skills': {
-                const skillsRaw = resumeData.skills || resumeData.skills_raw;
-                if (!skillsRaw) return null;
+                const skillsRaw = resumeData.skills_raw;
+                const skillsList = resumeData.skills;
                 let items = [];
-                if (Array.isArray(skillsRaw)) {
-                    const skillsText = skillsRaw.map(s => (typeof s === 'object' ? (s.canonical_name || s.skill_name || String(s)) : String(s))).join(', ');
-                    items = [skillsText];
-                } else {
-                    const skillsText = String(skillsRaw);
-                    items = skillsText.replace(/\n/g, '•').split('•').map(i => i.trim()).filter(Boolean);
+
+                if (skillsRaw) {
+                    const rawStr = String(skillsRaw);
+                    items = rawStr.replace(/\n/g, '•').split('•').map(i => i.trim()).filter(Boolean);
                 }
+
+                // Extract all skill tokens already present in skillsRaw items
+                const existingTokens = new Set();
+                items.forEach(item => {
+                    const text = item.includes(':') ? item.split(/:(.+)/)[1] || item : item;
+                    text.toLowerCase().split(/[,|•]/).forEach(s => {
+                        const clean = s.trim().toLowerCase();
+                        if (clean) existingTokens.add(clean);
+                    });
+                });
+
+                // Check skillsList for new user-added or confirmed skills
+                let extraSkills = [];
+                if (Array.isArray(skillsList)) {
+                    skillsList.forEach(s => {
+                        const name = typeof s === 'object' ? (s.canonical_name || s.skill_name || String(s)) : String(s);
+                        if (name && !existingTokens.has(name.trim().toLowerCase())) {
+                            extraSkills.push(name.trim());
+                        }
+                    });
+                } else if (typeof skillsList === 'string' && skillsList.trim()) {
+                    skillsList.split(',').forEach(s => {
+                        const name = s.trim();
+                        if (name && !existingTokens.has(name.toLowerCase())) {
+                            extraSkills.push(name);
+                        }
+                    });
+                }
+
+                if (extraSkills.length > 0) {
+                    items.push(`Additional Verified Skills: ${extraSkills.join(', ')}`);
+                }
+
+                if (items.length === 0 && skillsList) {
+                    if (Array.isArray(skillsList)) {
+                        items.push(skillsList.map(s => (typeof s === 'object' ? (s.canonical_name || s.skill_name || String(s)) : String(s))).join(', '));
+                    } else {
+                        items.push(String(skillsList));
+                    }
+                }
+
+                if (items.length === 0) return null;
+
                 return (
                     <div key="skills" className="doc-section">
                         <h4 className="doc-heading">TECHNICAL SKILLS</h4>
                         <div className="doc-skills-list">
                             {items.map((item, idx) => {
                                 if (item.includes(':')) {
-                                    const parts = item.split(':');
+                                    const parts = item.split(/:(.+)/);
                                     const cat = parts[0];
-                                    const val = parts.slice(1).join(':');
+                                    const val = parts[1] || '';
                                     return (
                                         <p key={idx} className="doc-bullet">
                                             • <strong>{cat.trim()}:</strong> {val.trim()}
