@@ -154,23 +154,21 @@ const MatchResults = ({ matchData, onAnalyzeAnother }) => {
             <div className="match-columns">
                 <div className="match-column strengths-col">
                     <h4>MATCHED SKILLS</h4>
-                    {matched_skills.length > 0 ? (
+                    {(matched_skills.length > 0 || matched_soft_skills.length > 0) ? (
                         <ul className="skill-list">
                             {matched_skills.map((s, i) => (
-                                <li key={i} title={s.evidence}>
-                                    <span className="check">✓</span> {s.skill_name} 
-                                    <span className="badge-type">{s.match_type}</span>
+                                <li key={i} title={s.evidence || s.skill_name}>
+                                    <span className="check">✓</span> <span className="skill-item-name">{s.skill_name}</span>
                                 </li>
                             ))}
                             {matched_soft_skills.map((s, i) => (
-                                <li key={`soft-${i}`} title={s.evidence}>
-                                    <span className="check">✓</span> {s.skill_name} 
-                                    <span className="badge-type">soft-skill</span>
+                                <li key={`soft-${i}`} title={s.evidence || s.skill_name}>
+                                    <span className="check">✓</span> <span className="skill-item-name">{s.skill_name}</span>
                                 </li>
                             ))}
                         </ul>
                     ) : (
-                        <p className="no-data">No technical skills matched.</p>
+                        <p className="no-data">No skills matched.</p>
                     )}
                 </div>
 
@@ -179,7 +177,9 @@ const MatchResults = ({ matchData, onAnalyzeAnother }) => {
                     {missing_required_skills.length > 0 ? (
                         <ul className="skill-list missing-required">
                             {missing_required_skills.map((s, i) => (
-                                <li key={i}><span className="dot red">⚠</span> {s.skill_name}</li>
+                                <li key={i}>
+                                    <span className="add-plus red">+</span> <span className="skill-item-name">{s.skill_name}</span>
+                                </li>
                             ))}
                         </ul>
                     ) : (
@@ -190,7 +190,9 @@ const MatchResults = ({ matchData, onAnalyzeAnother }) => {
                     {missing_preferred_skills.length > 0 ? (
                         <ul className="skill-list missing-preferred">
                             {missing_preferred_skills.map((s, i) => (
-                                <li key={i}><span className="dot yellow">○</span> {s.skill_name}</li>
+                                <li key={i}>
+                                    <span className="add-plus yellow">+</span> <span className="skill-item-name">{s.skill_name}</span>
+                                </li>
                             ))}
                         </ul>
                     ) : (
