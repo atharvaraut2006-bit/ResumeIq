@@ -95,13 +95,25 @@ function App() {
           <div className="auth-header-controls">
             {isAuthenticated ? (
               <div className="user-profile-badge">
-                <span className="user-welcome">👤 Welcome, <strong>{user?.name || user?.email?.split('@')[0]}</strong></span>
-                <button className="btn-auth-action signout" onClick={logout}>Sign Out</button>
+                <div className="user-avatar-circle">
+                  {(user?.name || user?.email || 'U')[0].toUpperCase()}
+                </div>
+                <span className="user-welcome">
+                  Welcome, <strong>{user?.name || user?.email?.split('@')[0]}</strong>
+                </span>
+                <button className="btn-auth-action signout" onClick={logout}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                  Sign Out
+                </button>
               </div>
             ) : (
               <div className="auth-action-buttons">
-                <button className="btn-auth-action signin" onClick={() => { setAuthModalMode('signin'); setIsAuthModalOpen(true); }}>Sign In</button>
-                <button className="btn-auth-action signup" onClick={() => { setAuthModalMode('signup'); setIsAuthModalOpen(true); }}>Create Account</button>
+                <button className="btn-auth-action signin" onClick={() => { setAuthModalMode('signin'); setIsAuthModalOpen(true); }}>
+                  Sign In
+                </button>
+                <button className="btn-auth-action signup" onClick={() => { setAuthModalMode('signup'); setIsAuthModalOpen(true); }}>
+                  Create Account
+                </button>
               </div>
             )}
           </div>
@@ -133,25 +145,25 @@ function App() {
                   className={`tab-btn ${activeTab === 'match' ? 'active' : ''}`}
                   onClick={() => setActiveTab('match')}
                 >
-                  Job Match Analysis
+                  <span>📊</span> Job Match Analysis
                 </button>
                 <button 
                   className={`tab-btn ${activeTab === 'optimize' ? 'active' : ''}`}
                   onClick={() => setActiveTab('optimize')}
                 >
-                  ATS Optimization & Skill Gaps
+                  <span>⚡</span> ATS Optimization & Skill Gaps
                 </button>
                 <button 
                   className={`tab-btn ${activeTab === 'export' ? 'active' : ''}`}
                   onClick={() => setActiveTab('export')}
                 >
-                  📄 Resume Builder & Export
+                  <span>📄</span> Resume Builder & Export
                 </button>
                 <button 
                   className={`tab-btn ${activeTab === 'coach' ? 'active' : ''}`}
                   onClick={() => setActiveTab('coach')}
                 >
-                  🎯 Career Strategy & Improvements
+                  <span>🎯</span> Career Strategy & Roadmap
                 </button>
               </div>
             )}
