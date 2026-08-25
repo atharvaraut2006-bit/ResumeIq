@@ -381,62 +381,6 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                             </div>
                         )}
                     </div>
-
-                    <div className="opt-section mt-4">
-                        <h3>ACTIONABLE IMPROVEMENTS</h3>
-                        <div className="suggestions-list">
-                            {suggestions.length === 0 ? (
-                                <p>No major structural improvements needed!</p>
-                            ) : (
-                                suggestions.map((s, i) => {
-                                    const statusVal = s.status || 'pending';
-                                    return (
-                                        <div key={s.id || `sugg-${i}`} className={`suggestion-card ${statusVal}`}>
-                                            <div className="sugg-header">
-                                                <span className="sugg-section">{(s.section || 'General').toUpperCase()}</span>
-                                                <span className={`sugg-impact ${(s.impact || 'medium').toLowerCase()}`}>{s.impact || 'Medium'} Impact</span>
-                                            </div>
-                                            <div className="sugg-reason">{s.reason}</div>
-                                            
-                                            <div className="before-after">
-                                                <div className="before">
-                                                    <strong>Current:</strong> "{s.original_text}"
-                                                </div>
-                                                <div className="after">
-                                                    <strong>Recommended:</strong> 
-                                                    {editingId === s.id && s.id ? (
-                                                        <div className="edit-box">
-                                                            <textarea 
-                                                                value={editText} 
-                                                                onChange={e => setEditText(e.target.value)}
-                                                                rows={3}
-                                                            />
-                                                            <div className="edit-actions">
-                                                                <button className="btn-save" onClick={() => handleEditSave(s.id)}>Save & Apply</button>
-                                                                <button className="btn-cancel" onClick={() => setEditingId(null)}>Cancel</button>
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <span> "{s.suggested_text}"</span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            
-                                            {statusVal === 'pending' && editingId !== s.id ? (
-                                                <div className="sugg-actions">
-                                                    {s.id && <button className="btn-accept" onClick={() => handleAccept(s.id)}>Accept</button>}
-                                                    {s.id && <button className="btn-edit" onClick={() => { setEditingId(s.id); setEditText(s.suggested_text); }}>Edit</button>}
-                                                    {s.id && <button className="btn-reject" onClick={() => handleReject(s.id)}>Reject</button>}
-                                                </div>
-                                            ) : statusVal !== 'pending' ? (
-                                                <div className="sugg-status">✓ Status: {statusVal.toUpperCase()} (Resume Version updated)</div>
-                                            ) : null}
-                                        </div>
-                                    );
-                                })
-                            )}
-                        </div>
-                    </div>
                 </div>
 
                 {/* Review Draft Modal */}
