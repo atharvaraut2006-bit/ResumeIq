@@ -93,7 +93,7 @@ def generate_docx(
             items = []
             
             if skills_raw:
-                items = [i.strip() for i in str(skills_raw).replace('\n', '•').split('•') if i.strip()]
+                items = parse_bullet_paragraphs(skills_raw)
                 
             existing_tokens = set()
             for item in items:
@@ -144,11 +144,12 @@ def generate_docx(
                 for exp in exp_list:
                     exp_text = exp.get('raw') or exp.get('description') or ""
                     if exp_text:
-                        clean_exp = re.sub(r'^[•\-\*\s]+', '', exp_text).strip()
-                        p = doc.add_paragraph(style='List Bullet')
-                        run = p.add_run(clean_exp)
-                        run.font.name = font_name
-                        run.font.size = Pt(9.5)
+                        bullets = parse_bullet_paragraphs(exp_text)
+                        for clean_exp in bullets:
+                            p = doc.add_paragraph(style='List Bullet')
+                            run = p.add_run(clean_exp)
+                            run.font.name = font_name
+                            run.font.size = Pt(9.5)
 
         elif section_key == 'projects':
             proj_list = resume_data.get('projects', [])
@@ -164,9 +165,8 @@ def generate_docx(
                     r_title.font.size = Pt(10)
                     
                     if p_desc:
-                        bullets = [b.strip() for b in p_desc.split('\n') if b.strip()]
-                        for b in bullets:
-                            clean_b = re.sub(r'^[•\-\*\s]+', '', b).strip()
+                        bullets = parse_bullet_paragraphs(p_desc)
+                        for clean_b in bullets:
                             bp = doc.add_paragraph(style='List Bullet')
                             r_b = bp.add_run(clean_b)
                             r_b.font.name = font_name

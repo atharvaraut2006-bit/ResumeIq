@@ -1,6 +1,34 @@
 import React from 'react';
 import './ResumeDocumentPreview.css';
 
+const parseBulletParagraphs = (rawStr) => {
+    if (!rawStr) return [];
+    const str = String(rawStr);
+    const rawLines = str.split('\n').map(l => l.trim()).filter(Boolean);
+    const items = [];
+    let currentItem = '';
+
+    for (const line of rawLines) {
+        const clean = line.replace(/^[•\-\*\s]+/, '').trim();
+        if (!clean) continue;
+
+        const isNewBullet = /^[•\-\*]/.test(line) || /^[\w\s&/()\-+]+:/.test(line);
+
+        if (isNewBullet && currentItem) {
+            items.push(currentItem);
+            currentItem = clean;
+        } else if (!currentItem) {
+            currentItem = clean;
+        } else {
+            currentItem += ' ' + clean;
+        }
+    }
+    if (currentItem) {
+        items.push(currentItem);
+    }
+    return items;
+};
+
 const ResumeDocumentPreview = ({ 
     resumeData, 
     templateId = 'ats_focused', 
@@ -39,8 +67,7 @@ const ResumeDocumentPreview = ({
                 let items = [];
 
                 if (skillsRaw) {
-                    const rawStr = String(skillsRaw);
-                    items = rawStr.replace(/\n/g, '•').split('•').map(i => i.trim()).filter(Boolean);
+                    items = parseBulletParagraphs(skillsRaw);
                 }
 
                 // Extract all skill tokens already present in skillsRaw items
@@ -116,8 +143,10 @@ const ResumeDocumentPreview = ({
                         {expList.map((e, idx) => {
                             const eText = e.raw || e.description || "";
                             if (!eText) return null;
-                            const cleanText = eText.replace(/^[•\-\*\s]+/, '').trim();
-                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
+                            const bullets = parseBulletParagraphs(eText);
+                            return bullets.map((cleanText, bIdx) => (
+                                <p key={`${idx}-${bIdx}`} className="doc-bullet">• {cleanText}</p>
+                            ));
                         })}
                     </div>
                 );
@@ -132,14 +161,13 @@ const ResumeDocumentPreview = ({
                         {projList.map((p, idx) => {
                             const pName = p.name || "Key Project";
                             const pDesc = p.raw || p.description || "";
-                            const bullets = pDesc ? pDesc.split('\n').filter(b => b.trim()) : [];
+                            const bullets = parseBulletParagraphs(pDesc);
                             return (
                                 <div key={idx} className="doc-project-block">
                                     <div className="doc-project-title">{pName}</div>
-                                    {bullets.map((b, bIdx) => {
-                                        const cleanB = b.replace(/^[•\-\*\s]+/, '').trim();
-                                        return <p key={bIdx} className="doc-bullet">• {cleanB}</p>;
-                                    })}
+                                    {bullets.map((cleanB, bIdx) => (
+                                        <p key={bIdx} className="doc-bullet">• {cleanB}</p>
+                                    ))}
                                 </div>
                             );
                         })}

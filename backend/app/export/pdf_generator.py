@@ -140,7 +140,7 @@ def generate_pdf(
             items = []
             
             if skills_raw:
-                items = [i.strip() for i in str(skills_raw).replace('\n', '•').split('•') if i.strip()]
+                items = parse_bullet_paragraphs(skills_raw)
                 
             existing_tokens = set()
             for item in items:
@@ -184,8 +184,9 @@ def generate_pdf(
                 for exp in exp_list:
                     exp_text = exp.get('raw') or exp.get('description') or ""
                     if exp_text:
-                        clean_exp = re.sub(r'^[•\-\*\s]+', '', exp_text).strip()
-                        story.append(Paragraph(f"• {clean_exp}", bullet_style))
+                        bullets = parse_bullet_paragraphs(exp_text)
+                        for clean_exp in bullets:
+                            story.append(Paragraph(f"• {clean_exp}", bullet_style))
                 story.append(Spacer(1, 4))
 
         elif section_key == 'projects':
@@ -197,9 +198,8 @@ def generate_pdf(
                     p_desc = proj.get('raw') or proj.get('description') or ""
                     story.append(Paragraph(f"<b>{p_name}</b>", body_style))
                     if p_desc:
-                        bullets = [b.strip() for b in p_desc.split('\n') if b.strip()]
-                        for b in bullets:
-                            clean_b = re.sub(r'^[•\-\*\s]+', '', b).strip()
+                        bullets = parse_bullet_paragraphs(p_desc)
+                        for clean_b in bullets:
                             story.append(Paragraph(f"• {clean_b}", bullet_style))
                 story.append(Spacer(1, 4))
 
