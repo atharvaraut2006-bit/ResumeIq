@@ -184,7 +184,8 @@ def generate_pdf(
                 for exp in exp_list:
                     exp_text = exp.get('raw') or exp.get('description') or ""
                     if exp_text:
-                        story.append(Paragraph(f"• {exp_text.strip()}", bullet_style))
+                        clean_exp = re.sub(r'^[•\-\*\s]+', '', exp_text).strip()
+                        story.append(Paragraph(f"• {clean_exp}", bullet_style))
                 story.append(Spacer(1, 4))
 
         elif section_key == 'projects':
@@ -198,7 +199,7 @@ def generate_pdf(
                     if p_desc:
                         bullets = [b.strip() for b in p_desc.split('\n') if b.strip()]
                         for b in bullets:
-                            clean_b = b.lstrip('•- ').strip()
+                            clean_b = re.sub(r'^[•\-\*\s]+', '', b).strip()
                             story.append(Paragraph(f"• {clean_b}", bullet_style))
                 story.append(Spacer(1, 4))
 
@@ -209,7 +210,8 @@ def generate_pdf(
                 for edu in edu_list:
                     e_text = edu.get('raw') or f"{edu.get('degree', '')} - {edu.get('institution', '')}"
                     if e_text:
-                        story.append(Paragraph(f"• {e_text.strip()}", bullet_style))
+                        clean_e = re.sub(r'^[•\-\*\s]+', '', e_text).strip()
+                        story.append(Paragraph(f"• {clean_e}", bullet_style))
                 story.append(Spacer(1, 4))
 
         elif section_key == 'certifications':
@@ -219,7 +221,8 @@ def generate_pdf(
                 for c in cert_list:
                     c_text = c.get('raw') or c.get('name') or str(c)
                     if c_text:
-                        story.append(Paragraph(f"• {c_text.strip()}", bullet_style))
+                        clean_c = re.sub(r'^[•\-\*\s]+', '', c_text).strip()
+                        story.append(Paragraph(f"• {clean_c}", bullet_style))
                 story.append(Spacer(1, 4))
 
         elif section_key == 'achievements':
@@ -229,7 +232,8 @@ def generate_pdf(
                 for a in ach_list:
                     a_text = a.get('raw') or str(a)
                     if a_text:
-                        story.append(Paragraph(f"• {a_text.strip()}", bullet_style))
+                        clean_a = re.sub(r'^[•\-\*\s]+', '', a_text).strip()
+                        story.append(Paragraph(f"• {clean_a}", bullet_style))
                 story.append(Spacer(1, 4))
 
     # Render sections according to requested order

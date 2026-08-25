@@ -142,7 +142,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                     <p className="builder-sub">Transform your finalized resume data into downloadable, ATS-friendly PDF & DOCX documents.</p>
                 </div>
                 <button className="btn-pre-export header-export-btn" onClick={handlePreExportValidation}>
-                    ⚡ PREVIEW & EXPORT FINAL RESUME
+                    PREVIEW & EXPORT FINAL RESUME
                 </button>
             </div>
 

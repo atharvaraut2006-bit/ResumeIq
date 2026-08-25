@@ -285,7 +285,7 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                     </div>
 
                     <button className="btn-generate-version" onClick={handleGenerateVersion} disabled={generatingVersion}>
-                        {generatingVersion ? 'Generating Draft Version...' : '⚡ GENERATE JD-SPECIFIC RESUME'}
+                        {generatingVersion ? 'Generating Draft Version...' : 'GENERATE JD-SPECIFIC RESUME'}
                     </button>
                 </div>
             </div>

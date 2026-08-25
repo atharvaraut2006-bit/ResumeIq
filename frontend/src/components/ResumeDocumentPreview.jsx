@@ -116,7 +116,8 @@ const ResumeDocumentPreview = ({
                         {expList.map((e, idx) => {
                             const eText = e.raw || e.description || "";
                             if (!eText) return null;
-                            return <p key={idx} className="doc-bullet">• {eText.trim()}</p>;
+                            const cleanText = eText.replace(/^[•\-\*\s]+/, '').trim();
+                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
                         })}
                     </div>
                 );
@@ -135,9 +136,10 @@ const ResumeDocumentPreview = ({
                             return (
                                 <div key={idx} className="doc-project-block">
                                     <div className="doc-project-title">{pName}</div>
-                                    {bullets.map((b, bIdx) => (
-                                        <p key={bIdx} className="doc-bullet">• {b.replace(/^[•\-\s]+/, '')}</p>
-                                    ))}
+                                    {bullets.map((b, bIdx) => {
+                                        const cleanB = b.replace(/^[•\-\*\s]+/, '').trim();
+                                        return <p key={bIdx} className="doc-bullet">• {cleanB}</p>;
+                                    })}
                                 </div>
                             );
                         })}
@@ -153,7 +155,8 @@ const ResumeDocumentPreview = ({
                         <h4 className="doc-heading">EDUCATION</h4>
                         {eduList.map((e, idx) => {
                             const eText = e.raw || `${e.degree || ''} - ${e.institution || ''}`;
-                            return <p key={idx} className="doc-bullet">• {eText.trim()}</p>;
+                            const cleanText = eText.replace(/^[•\-\*\s]+/, '').trim();
+                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
                         })}
                     </div>
                 );
@@ -167,7 +170,8 @@ const ResumeDocumentPreview = ({
                         <h4 className="doc-heading">CERTIFICATIONS</h4>
                         {certList.map((c, idx) => {
                             const cText = c.raw || c.name || String(c);
-                            return <p key={idx} className="doc-bullet">• {cText.trim()}</p>;
+                            const cleanText = cText.replace(/^[•\-\*\s]+/, '').trim();
+                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
                         })}
                     </div>
                 );
@@ -181,7 +185,8 @@ const ResumeDocumentPreview = ({
                         <h4 className="doc-heading">ACHIEVEMENTS</h4>
                         {achList.map((a, idx) => {
                             const aText = a.raw || String(a);
-                            return <p key={idx} className="doc-bullet">• {aText.trim()}</p>;
+                            const cleanText = aText.replace(/^[•\-\*\s]+/, '').trim();
+                            return <p key={idx} className="doc-bullet">• {cleanText}</p>;
                         })}
                     </div>
                 );

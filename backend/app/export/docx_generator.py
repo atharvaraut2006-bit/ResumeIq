@@ -144,8 +144,9 @@ def generate_docx(
                 for exp in exp_list:
                     exp_text = exp.get('raw') or exp.get('description') or ""
                     if exp_text:
+                        clean_exp = re.sub(r'^[•\-\*\s]+', '', exp_text).strip()
                         p = doc.add_paragraph(style='List Bullet')
-                        run = p.add_run(exp_text.strip())
+                        run = p.add_run(clean_exp)
                         run.font.name = font_name
                         run.font.size = Pt(9.5)
 
@@ -165,7 +166,7 @@ def generate_docx(
                     if p_desc:
                         bullets = [b.strip() for b in p_desc.split('\n') if b.strip()]
                         for b in bullets:
-                            clean_b = b.lstrip('•- ').strip()
+                            clean_b = re.sub(r'^[•\-\*\s]+', '', b).strip()
                             bp = doc.add_paragraph(style='List Bullet')
                             r_b = bp.add_run(clean_b)
                             r_b.font.name = font_name
@@ -178,8 +179,9 @@ def generate_docx(
                 for edu in edu_list:
                     e_text = edu.get('raw') or f"{edu.get('degree', '')} - {edu.get('institution', '')}"
                     if e_text:
+                        clean_e = re.sub(r'^[•\-\*\s]+', '', e_text).strip()
                         p = doc.add_paragraph(style='List Bullet')
-                        run = p.add_run(e_text.strip())
+                        run = p.add_run(clean_e)
                         run.font.name = font_name
                         run.font.size = Pt(9.5)
 
@@ -190,8 +192,9 @@ def generate_docx(
                 for c in cert_list:
                     c_text = c.get('raw') or c.get('name') or str(c)
                     if c_text:
+                        clean_c = re.sub(r'^[•\-\*\s]+', '', c_text).strip()
                         p = doc.add_paragraph(style='List Bullet')
-                        run = p.add_run(c_text.strip())
+                        run = p.add_run(clean_c)
                         run.font.name = font_name
                         run.font.size = Pt(9.5)
 
@@ -202,8 +205,9 @@ def generate_docx(
                 for a in ach_list:
                     a_text = a.get('raw') or str(a)
                     if a_text:
+                        clean_a = re.sub(r'^[•\-\*\s]+', '', a_text).strip()
                         p = doc.add_paragraph(style='List Bullet')
-                        run = p.add_run(a_text.strip())
+                        run = p.add_run(clean_a)
                         run.font.name = font_name
                         run.font.size = Pt(9.5)
 
