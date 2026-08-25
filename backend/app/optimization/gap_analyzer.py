@@ -14,26 +14,45 @@ def analyze_gaps(job_match: JobMatch):
     soft_skill_gaps = []
     weak_evidence = []
     
+    CLOUD_DEVOPS_SKILLS = {'aws', 'azure', 'google cloud', 'gcp', 'docker', 'kubernetes', 'ci/cd', 'terraform', 'jenkins', 'devops'}
+    TOOL_GENERAL_SKILLS = {'dbms', 'software engineering', 'git', 'github', 'jira', 'figma', 'postman', 'agile', 'scrum', 'operating systems', 'computer networks'}
+
+    missing_gaps = []
     for sm in skill_matches:
         if sm.match_type == "missing":
             gap = {
                 "skill": sm.skill_name,
                 "required": sm.required,
                 "confidence": 95,
-                "reason": f"Required technical skill missing from resume." if sm.required and sm.category == "technical" else ("Required soft skill missing from resume." if sm.required else "Preferred skill missing from resume."),
-                "action": f"If you have {sm.skill_name} experience, add it to your Skills section and a project description.",
+                "reason": f"Required technical skill missing from resume.",
+                "action": f"If you have {sm.skill_name} experience, add it to your Skills section.",
                 "category": sm.category
             }
-            
-            if sm.required and sm.category == "technical":
-                gap["priority"] = "high"
-                high_priority.append(gap)
-            elif sm.required or sm.category == "soft":
-                gap["priority"] = "moderate"
-                medium_priority.append(gap)
+            missing_gaps.append(gap)
+
+    for gap in missing_gaps:
+        sname = gap["skill"].lower()
+        if sname in CLOUD_DEVOPS_SKILLS or gap["category"] == "soft":
+            gap["priority"] = "moderate"
+            medium_priority.append(gap)
+        elif sname in TOOL_GENERAL_SKILLS or not gap["required"]:
+            gap["priority"] = "low"
+            low_priority.append(gap)
+        else:
+            gap["priority"] = "high"
+            high_priority.append(gap)
+
+    # Balance distribution if high_priority is over-saturated (> 4)
+    if len(high_priority) > 4:
+        overflow = high_priority[4:]
+        high_priority = high_priority[:4]
+        for idx, item in enumerate(overflow):
+            if idx % 2 == 0:
+                item["priority"] = "moderate"
+                medium_priority.append(item)
             else:
-                gap["priority"] = "low"
-                low_priority.append(gap)
+                item["priority"] = "low"
+                low_priority.append(item)
                 
         elif sm.match_type == "semantic" and sm.category == "soft":
             if sm.confidence and sm.confidence < 0.80:
