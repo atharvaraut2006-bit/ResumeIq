@@ -339,11 +339,6 @@ INITIAL_KNOWLEDGE_BASE = [
         "canonical_name": "Software Engineering",
         "category": "Core Subjects",
         "aliases": ["software engineering", "sdlc", "software development life cycle"]
-    },
-    {
-        "canonical_name": "Web Technologies",
-        "category": "Web Development",
-        "aliases": ["web technologies", "web development", "web dev", "web technology"]
     }
 ]
 
@@ -352,6 +347,13 @@ def initialize_knowledge_base():
     Populates/syncs the database with the skill knowledge base.
     """
     logger.info("Syncing skill knowledge base...")
+    
+    # Remove generic section header skills if previously added
+    generic_skill = Skill.query.filter_by(canonical_name="Web Technologies").first()
+    if generic_skill:
+        SkillAlias.query.filter_by(skill_id=generic_skill.id).delete()
+        db.session.delete(generic_skill)
+        db.session.commit()
     
     for skill_data in INITIAL_KNOWLEDGE_BASE:
         skill = Skill.query.filter_by(canonical_name=skill_data["canonical_name"]).first()

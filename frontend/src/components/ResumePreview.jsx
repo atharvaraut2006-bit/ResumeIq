@@ -63,11 +63,13 @@ const ResumePreview = ({ data, skills, filename, onReset }) => {
                             <div key={category} className="skill-category">
                                 <h5>{category}</h5>
                                 <ul>
-                                    {catSkills.map((rs, idx) => (
-                                        <li key={idx}>
-                                            <span className="skill-name-plain">{rs.skill.canonical_name}</span>
-                                        </li>
-                                    ))}
+                                    {catSkills
+                                        .filter(rs => !["Web Technologies", "Web Development"].includes(rs.skill?.canonical_name))
+                                        .map((rs, idx) => (
+                                            <li key={idx}>
+                                                <span className="skill-name-plain">{rs.skill.canonical_name}</span>
+                                            </li>
+                                        ))}
                                 </ul>
                             </div>
                         ))
