@@ -133,42 +133,47 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
     return (
         <div className="builder-export-container">
             <div className="builder-header-bar">
-                <h2>PROFESSIONAL RESUME BUILDER & EXPORT ENGINE</h2>
-                <p className="builder-sub">Transform your finalized resume data into downloadable, ATS-friendly PDF & DOCX documents.</p>
+                <div>
+                    <h2>PROFESSIONAL RESUME BUILDER & EXPORT ENGINE</h2>
+                    <p className="builder-sub">Transform your finalized resume data into downloadable, ATS-friendly PDF & DOCX documents.</p>
+                </div>
+                <button className="btn-pre-export header-export-btn" onClick={handlePreExportValidation}>
+                    ⚡ PREVIEW & EXPORT FINAL RESUME
+                </button>
+            </div>
+
+            {/* 1. Full-Width Horizontal Template Selector */}
+            <div className="panel-card template-top-card">
+                <h3>1. CHOOSE RESUME TEMPLATE</h3>
+                <div className="template-radio-grid">
+                    {[
+                        { id: 'ats_focused', name: 'ATS Focused', desc: '100% ATS Parser Readability' },
+                        { id: 'classic_professional', name: 'Classic Professional', desc: 'Serif Headers & Corporate Style' },
+                        { id: 'modern_minimal', name: 'Modern Minimal', desc: 'Sleek Sans-Serif & Teal Accents' },
+                        { id: 'technical', name: 'Technical', desc: 'Code Matrix & Technical Focus' }
+                    ].map(t => (
+                        <label key={t.id} className={`template-option-card ${selectedTemplate === t.id ? 'active' : ''}`}>
+                            <input 
+                                type="radio" 
+                                name="template" 
+                                value={t.id} 
+                                checked={selectedTemplate === t.id}
+                                onChange={() => setSelectedTemplate(t.id)}
+                            />
+                            <div className="template-info">
+                                <strong>{t.name}</strong>
+                                <span>{t.desc}</span>
+                            </div>
+                        </label>
+                    ))}
+                </div>
             </div>
 
             <div className="builder-grid-layout">
                 {/* Left Controls Panel */}
                 <div className="controls-panel">
-                    {/* 1. Template Selection */}
-                    <div className="panel-card">
-                        <h3>1. CHOOSE RESUME TEMPLATE</h3>
-                        <div className="template-radio-group">
-                            {[
-                                { id: 'ats_focused', name: 'ATS Focused', desc: '100% ATS Parser Readability' },
-                                { id: 'classic_professional', name: 'Classic Professional', desc: 'Serif Headers & Corporate Style' },
-                                { id: 'modern_minimal', name: 'Modern Minimal', desc: 'Sleek Sans-Serif & Teal Accents' },
-                                { id: 'technical', name: 'Technical', desc: 'Code Matrix & Technical Focus' }
-                            ].map(t => (
-                                <label key={t.id} className={`template-option-card ${selectedTemplate === t.id ? 'active' : ''}`}>
-                                    <input 
-                                        type="radio" 
-                                        name="template" 
-                                        value={t.id} 
-                                        checked={selectedTemplate === t.id}
-                                        onChange={() => setSelectedTemplate(t.id)}
-                                    />
-                                    <div className="template-info">
-                                        <strong>{t.name}</strong>
-                                        <span>{t.desc}</span>
-                                    </div>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* 2. Section Control & Ordering */}
-                    <div className="panel-card mt-3">
+                    <div className="panel-card">
                         <h3>2. SECTION CONTROL & ORDERING</h3>
                         <p className="small-text">Toggle section visibility and adjust print layout order.</p>
                         <div className="sections-list-control">
@@ -308,11 +313,6 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                             </p>
                         </div>
                     </div>
-
-                    {/* Generate Trigger Button */}
-                    <button className="btn-pre-export mt-4" onClick={handlePreExportValidation}>
-                        ⚡ PREVIEW & EXPORT FINAL RESUME
-                    </button>
                 </div>
 
                 {/* Right Document Live Preview */}
