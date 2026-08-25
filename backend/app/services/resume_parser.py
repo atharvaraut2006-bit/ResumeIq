@@ -41,15 +41,15 @@ def extract_sections(text: str) -> Dict[str, str]:
     
     headings_map = {
         r"SUMMARY|PROFESSIONAL SUMMARY|PROFILE|PROFILE SUMMARY|ABOUT ME|ABOUT|CAREER OBJECTIVE|OBJECTIVE|PROFESSIONAL RESUME|PROFESSIONAL OVERVIEW|CAREER OVERVIEW|OVERVIEW|BACKGROUND|SUMMARY OF QUALIFICATIONS|PROFILE STATEMENT": "summary",
-        r"EDUCATION|ACADEMIC BACKGROUND|ACADEMICS|QUALIFICATIONS": "education",
+        r"EDUCATION AND EXTRACURRICULAR|EDUCATION & EXTRACURRICULAR|EDUCATION|ACADEMIC BACKGROUND|ACADEMICS|QUALIFICATIONS": "education",
         r"EXPERIENCE|WORK EXPERIENCE|PROFESSIONAL EXPERIENCE|EMPLOYMENT HISTORY|WORK HISTORY|INTERNSHIP|INTERNSHIPS|EMPLOYMENT": "experience",
         r"SKILLS|TECHNICAL SKILLS|CORE COMPETENCIES|TECHNICAL PROFICIENCIES|SKILLS & TECHNOLOGIES": "skills",
         r"PROJECTS|ACADEMIC PROJECTS|PERSONAL PROJECTS|KEY PROJECTS": "projects",
-        r"CERTIFICATIONS|CERTIFICATES|LICENSES": "certifications",
+        r"CERTIFICATIONS|CERTIFICATES|LICENSES|LICENSES & CERTIFICATIONS": "certifications",
         r"ACHIEVEMENTS|AWARDS|HONORS": "achievements",
         r"PUBLICATIONS": "publications",
         r"POSITIONS OF RESPONSIBILITY|LEADERSHIP": "positions_of_responsibility",
-        r"EXTRACURRICULAR ACTIVITIES|EXTRA-CURRICULAR": "extracurricular_activities"
+        r"EXTRACURRICULAR ACTIVITIES|EXTRACURRICULAR|EXTRA-CURRICULAR": "extracurricular_activities"
     }
     
     lines = text.split('\n')
@@ -59,13 +59,12 @@ def extract_sections(text: str) -> Dict[str, str]:
         if not line_clean:
             continue
             
+        line_norm = re.sub(r'\s+', ' ', line_clean).upper()
         is_heading = False
         
-        if len(line_clean) < 60:
-            line_upper = line_clean.upper()
-            
+        if len(line_norm) < 60:
             for pattern, normalized_name in headings_map.items():
-                if re.search(r"^\s*([•\-\d\.]*\s*)?(" + pattern + r")\s*[:-]?$", line_upper):
+                if re.search(r"^\s*([•\-\d\.]*\s*)?(" + pattern + r")\s*[:-]?$", line_norm):
                     if current_content:
                         sections[current_section] = "\n".join(current_content).strip()
                     
@@ -80,19 +79,11 @@ def extract_sections(text: str) -> Dict[str, str]:
     if current_content:
         sections[current_section] = "\n".join(current_content).strip()
         
-    # Fallback Summary extraction
-    if not sections.get("summary") and sections.get("contact"):
-        contact_lines = [l for l in sections["contact"].split('\n') if l.strip()]
-        non_meta_lines = [
-            l for l in contact_lines 
-            if '@' not in l and not re.search(r'\d{10}', re.sub(r'[-.\s]', '', l)) 
-            and not re.search(r'linkedin|github|http|\|', l.lower())
-            and len(l.strip()) > 30
-        ]
-        if non_meta_lines:
-            potential_summary = " ".join(non_meta_lines).strip()
-            if len(potential_summary) > 40 and '@' not in potential_summary and '|' not in potential_summary:
-                sections["summary"] = potential_summary
+    # Clean contact pollution out of summary
+    if sections.get("summary"):
+        sum_text = sections["summary"].strip()
+        if '@' in sum_text or 'linkedin' in sum_text.lower() or 'github' in sum_text.lower():
+            sections["summary"] = ""
         
     return sections
 

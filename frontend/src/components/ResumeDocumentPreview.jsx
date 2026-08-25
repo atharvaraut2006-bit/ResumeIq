@@ -163,12 +163,12 @@ const ResumeDocumentPreview = ({
                     <div key="projects" className="doc-section">
                         <h4 className="doc-heading">PROJECTS</h4>
                         {projList.map((p, idx) => {
-                            const pName = p.name || "Key Project";
+                            const pName = p.name && p.name !== "Key Project" ? p.name : null;
                             const pDesc = p.raw || p.description || "";
                             const bullets = parseBulletParagraphs(pDesc);
                             return (
                                 <div key={idx} className="doc-project-block">
-                                    <div className="doc-project-title">{pName}</div>
+                                    {pName && <div className="doc-project-title">{pName}</div>}
                                     {bullets.map((cleanB, bIdx) => (
                                         <p key={bIdx} className="doc-bullet">• {cleanB}</p>
                                     ))}
@@ -251,11 +251,11 @@ const ResumeDocumentPreview = ({
                         
                         // Skip header info if already in contact bar
                         if (email && lower.includes(email.toLowerCase())) return null;
-                        if (phone && lower.includes(phone.toLowerCase())) return null;
+                        if (phone && lower.replace(/[-.\s]/g, '').includes(phone.replace(/[-.\s]/g, ''))) return null;
                         if (name && lower.includes(name.toLowerCase())) return null;
-                        if (lower.includes('linkedin.com') || lower.includes('github.com')) return null;
+                        if (lower === 'linkedin' || lower === 'github' || lower.includes('linkedin.com') || lower.includes('github.com')) return null;
 
-                        const isHeading = /^(TECHNICAL SKILLS|PROFESSIONAL SUMMARY|SUMMARY|WORK EXPERIENCE|EXPERIENCE|PROJECTS|KEY PROJECTS|EDUCATION|CERTIFICATIONS|ACHIEVEMENTS|PUBLICATIONS|POSITIONS OF RESPONSIBILITY|EXTRA-CURRICULAR ACTIVITIES):?$/i.test(cleanLine);
+                        const isHeading = /^(TECHNICAL SKILLS|PROFESSIONAL SUMMARY|SUMMARY|WORK EXPERIENCE|EXPERIENCE|PROJECTS|KEY PROJECTS|EDUCATION AND EXTRACURRICULAR|EDUCATION & EXTRACURRICULAR|EDUCATION|CERTIFICATIONS|LICENSES|LICENSES & CERTIFICATIONS|ACHIEVEMENTS|PUBLICATIONS|POSITIONS OF RESPONSIBILITY|EXTRA-CURRICULAR ACTIVITIES|EXTRACURRICULAR):?$/i.test(cleanLine);
 
                         if (isHeading) {
                             return (
@@ -265,7 +265,7 @@ const ResumeDocumentPreview = ({
                             );
                         }
 
-                        if (/^[•\-\*]/.test(line) || /^[\w\s&/()\-+]+:/.test(cleanLine)) {
+                        if (/^[•\-\*]/.test(line) || /^(Tech Stack|Languages|Database|Software Engineering|Core Concepts|Web & Tools|Machine Learning|Agentic AI|Frameworks|Cloud):/i.test(cleanLine)) {
                             if (cleanLine.includes(':')) {
                                 const parts = cleanLine.split(/:(.+)/);
                                 const cat = parts[0];
