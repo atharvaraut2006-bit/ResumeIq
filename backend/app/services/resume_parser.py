@@ -31,6 +31,66 @@ def parse_resume(text: str) -> Dict[str, Any]:
                            if k not in ["contact", "summary", "education", "experience", "skills", "projects", "certifications", "achievements"]]
     }
 
+HEADING_KEYWORDS_MAP = {
+    "SUMMARY": "summary",
+    "PROFESSIONAL SUMMARY": "summary",
+    "PROFILE": "summary",
+    "PROFILE SUMMARY": "summary",
+    "ABOUT ME": "summary",
+    "ABOUT": "summary",
+    "CAREER OBJECTIVE": "summary",
+    "OBJECTIVE": "summary",
+    "PROFESSIONAL RESUME": "summary",
+    "PROFESSIONAL OVERVIEW": "summary",
+    "CAREER OVERVIEW": "summary",
+    "OVERVIEW": "summary",
+    "SUMMARY OF QUALIFICATIONS": "summary",
+    
+    "SKILLS": "skills",
+    "TECHNICAL SKILLS": "skills",
+    "CORE COMPETENCIES": "skills",
+    "TECHNICAL PROFICIENCIES": "skills",
+    "SKILLS TECHNOLOGIES": "skills",
+    "SKILLS & TECHNOLOGIES": "skills",
+    "TECHNICAL SKILLS & TOOLS": "skills",
+
+    "EXPERIENCE": "experience",
+    "WORK EXPERIENCE": "experience",
+    "PROFESSIONAL EXPERIENCE": "experience",
+    "EMPLOYMENT HISTORY": "experience",
+    "WORK HISTORY": "experience",
+    "INTERNSHIP": "experience",
+    "INTERNSHIPS": "experience",
+    "EMPLOYMENT": "experience",
+
+    "PROJECTS": "projects",
+    "KEY PROJECTS": "projects",
+    "ACADEMIC PROJECTS": "projects",
+    "PERSONAL PROJECTS": "projects",
+
+    "EDUCATION": "education",
+    "ACADEMIC BACKGROUND": "education",
+    "ACADEMICS": "education",
+    "QUALIFICATIONS": "education",
+    "EDUCATION AND EXTRACURRICULAR": "education",
+    "EDUCATION & EXTRACURRICULAR": "education",
+
+    "CERTIFICATIONS": "certifications",
+    "CERTIFICATES": "certifications",
+    "LICENSES": "certifications",
+    "LICENSES AND CERTIFICATIONS": "certifications",
+    "LICENSES & CERTIFICATIONS": "certifications",
+
+    "ACHIEVEMENTS": "achievements",
+    "AWARDS": "achievements",
+    "HONORS": "achievements",
+    "AWARDS AND ACHIEVEMENTS": "achievements",
+
+    "EXTRACURRICULAR ACTIVITIES": "extracurricular_activities",
+    "EXTRACURRICULAR": "extracurricular_activities",
+    "EXTRA-CURRICULAR": "extracurricular_activities"
+}
+
 def extract_sections(text: str) -> Dict[str, str]:
     """
     Splits text into logical sections based on common headings.
@@ -59,12 +119,19 @@ def extract_sections(text: str) -> Dict[str, str]:
         if not line_clean:
             continue
             
-        line_norm = re.sub(r'\s+', ' ', line_clean).upper()
+        norm = re.sub(r'[\s\xa0\u200b]+', ' ', line_clean).upper()
+        clean_heading = re.sub(r'[^A-Z0-9\s&]', '', norm).strip()
         is_heading = False
         
-        if len(line_norm) < 60:
+        if len(clean_heading) < 50 and clean_heading in HEADING_KEYWORDS_MAP:
+            if current_content:
+                sections[current_section] = "\n".join(current_content).strip()
+            current_section = HEADING_KEYWORDS_MAP[clean_heading]
+            current_content = []
+            is_heading = True
+        elif len(norm) < 60:
             for pattern, normalized_name in headings_map.items():
-                if re.search(r"^\s*([•\-\d\.]*\s*)?(" + pattern + r")\s*[:-]?$", line_norm):
+                if re.search(r"^\s*([•\-\d\.]*\s*)?(" + pattern + r")\s*[:-]?$", norm):
                     if current_content:
                         sections[current_section] = "\n".join(current_content).strip()
                     
@@ -79,10 +146,14 @@ def extract_sections(text: str) -> Dict[str, str]:
     if current_content:
         sections[current_section] = "\n".join(current_content).strip()
         
-    # Clean contact pollution out of summary
+    # Clean contact info pollution out of summary
     if sections.get("summary"):
         sum_text = sections["summary"].strip()
-        if '@' in sum_text or 'linkedin' in sum_text.lower() or 'github' in sum_text.lower():
+        lines = [l for l in sum_text.split('\n') if l.strip()]
+        valid_summary_lines = [l for l in lines if '@' not in l and 'linkedin' not in l.lower() and 'github' not in l.lower()]
+        if valid_summary_lines:
+            sections["summary"] = "\n".join(valid_summary_lines).strip()
+        else:
             sections["summary"] = ""
         
     return sections

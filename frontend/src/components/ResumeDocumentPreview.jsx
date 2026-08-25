@@ -33,6 +33,16 @@ const parseBulletParagraphs = (rawStr) => {
     return items;
 };
 
+const KNOWN_HEADINGS_SET = new Set([
+    "SUMMARY", "PROFESSIONAL SUMMARY", "PROFILE", "PROFILE SUMMARY", "ABOUT ME", "CAREER OBJECTIVE", "OBJECTIVE",
+    "SKILLS", "TECHNICAL SKILLS", "CORE COMPETENCIES", "TECHNICAL PROFICIENCIES", "SKILLS & TECHNOLOGIES", "SKILLS TECHNOLOGIES",
+    "EXPERIENCE", "WORK EXPERIENCE", "PROFESSIONAL EXPERIENCE", "EMPLOYMENT HISTORY", "INTERNSHIP", "INTERNSHIPS",
+    "PROJECTS", "KEY PROJECTS", "ACADEMIC PROJECTS", "PERSONAL PROJECTS",
+    "EDUCATION", "EDUCATION AND EXTRACURRICULAR", "EDUCATION & EXTRACURRICULAR", "ACADEMIC BACKGROUND",
+    "CERTIFICATIONS", "CERTIFICATES", "LICENSES", "LICENSES & CERTIFICATIONS", "LICENSES AND CERTIFICATIONS",
+    "ACHIEVEMENTS", "AWARDS", "HONORS", "PUBLICATIONS", "POSITIONS OF RESPONSIBILITY", "EXTRACURRICULAR ACTIVITIES", "EXTRACURRICULAR"
+]);
+
 const ResumeDocumentPreview = ({ 
     resumeData, 
     templateId = 'ats_focused', 
@@ -71,7 +81,13 @@ const ResumeDocumentPreview = ({
                 let items = [];
 
                 if (skillsRaw) {
-                    items = parseBulletParagraphs(skillsRaw);
+                    items = parseBulletParagraphs(skillsRaw).filter(item => {
+                        const clean = item.trim().toLowerCase();
+                        if (clean.startsWith('pre-final year') || clean.startsWith('passionate about') || clean.startsWith('experienced in building')) {
+                            return false;
+                        }
+                        return true;
+                    });
                 }
 
                 // Extract all skill tokens already present in skillsRaw items
@@ -255,7 +271,8 @@ const ResumeDocumentPreview = ({
                         if (name && lower.includes(name.toLowerCase())) return null;
                         if (lower === 'linkedin' || lower === 'github' || lower.includes('linkedin.com') || lower.includes('github.com')) return null;
 
-                        const isHeading = /^(TECHNICAL SKILLS|PROFESSIONAL SUMMARY|SUMMARY|WORK EXPERIENCE|EXPERIENCE|PROJECTS|KEY PROJECTS|EDUCATION AND EXTRACURRICULAR|EDUCATION & EXTRACURRICULAR|EDUCATION|CERTIFICATIONS|LICENSES|LICENSES & CERTIFICATIONS|ACHIEVEMENTS|PUBLICATIONS|POSITIONS OF RESPONSIBILITY|EXTRA-CURRICULAR ACTIVITIES|EXTRACURRICULAR):?$/i.test(cleanLine);
+                        const cleanHeadingCheck = cleanLine.replace(/[^A-Za-z0-9\s&]/g, '').trim().toUpperCase();
+                        const isHeading = KNOWN_HEADINGS_SET.has(cleanHeadingCheck);
 
                         if (isHeading) {
                             return (
