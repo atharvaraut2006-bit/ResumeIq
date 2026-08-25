@@ -309,38 +309,73 @@ INITIAL_KNOWLEDGE_BASE = [
         "canonical_name": "Bitbucket",
         "category": "Version Control",
         "aliases": ["bitbucket"]
+    },
+    {
+        "canonical_name": "Operating Systems",
+        "category": "Core Subjects",
+        "aliases": ["os", "operating systems", "operating system"]
+    },
+    {
+        "canonical_name": "DBMS",
+        "category": "Core Subjects",
+        "aliases": ["dbms", "database management", "database management system", "database management systems"]
+    },
+    {
+        "canonical_name": "Data Structures & Algorithms",
+        "category": "Core Subjects",
+        "aliases": ["dsa", "data structures", "algorithms", "data structures & algorithms", "data structures and algorithms"]
+    },
+    {
+        "canonical_name": "Computer Networks",
+        "category": "Core Subjects",
+        "aliases": ["cn", "computer networks", "networking"]
+    },
+    {
+        "canonical_name": "Object-Oriented Programming",
+        "category": "Core Subjects",
+        "aliases": ["oops", "oop", "object oriented programming", "object-oriented programming"]
+    },
+    {
+        "canonical_name": "Software Engineering",
+        "category": "Core Subjects",
+        "aliases": ["software engineering", "sdlc"]
+    },
+    {
+        "canonical_name": "Web Technologies",
+        "category": "Web Development",
+        "aliases": ["web technologies", "web development", "web dev"]
     }
 ]
 
 def initialize_knowledge_base():
     """
-    Populates the database with the initial skill knowledge base.
+    Populates/syncs the database with the skill knowledge base.
     """
-    logger.info("Initializing skill knowledge base...")
+    logger.info("Syncing skill knowledge base...")
     
-    # Check if we already have skills
-    if Skill.query.first():
-        logger.info("Skill knowledge base already initialized.")
-        return
-        
     for skill_data in INITIAL_KNOWLEDGE_BASE:
-        skill = Skill(
-            canonical_name=skill_data["canonical_name"],
-            category=skill_data["category"]
-        )
-        db.session.add(skill)
-        db.session.flush() # Get the ID
+        skill = Skill.query.filter_by(canonical_name=skill_data["canonical_name"]).first()
+        if not skill:
+            skill = Skill(
+                canonical_name=skill_data["canonical_name"],
+                category=skill_data["category"]
+            )
+            db.session.add(skill)
+            db.session.flush()
         
         for alias_name in skill_data["aliases"]:
-            alias = SkillAlias(
-                skill_id=skill.id,
-                alias=alias_name.lower()
-            )
-            db.session.add(alias)
+            clean_alias = alias_name.lower()
+            existing_alias = SkillAlias.query.filter_by(alias=clean_alias).first()
+            if not existing_alias:
+                alias = SkillAlias(
+                    skill_id=skill.id,
+                    alias=clean_alias
+                )
+                db.session.add(alias)
             
     try:
         db.session.commit()
-        logger.info("Successfully populated skill knowledge base.")
+        logger.info("Successfully populated/synced skill knowledge base.")
     except Exception as e:
         db.session.rollback()
         logger.error(f"Failed to populate skill knowledge base: {e}")
