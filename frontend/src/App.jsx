@@ -89,7 +89,7 @@ function App() {
         <div className="header-top-row">
           <div className="brand">
             <h1>📄 ResumeIQ</h1>
-            <span className="subtitle">AI-Powered Resume Analysis & Job Matching Engine</span>
+            <span className="subtitle">A Smarter Way to Build Your Career.</span>
           </div>
 
           <div className="auth-header-controls">
@@ -116,15 +116,6 @@ function App() {
                 </button>
               </div>
             )}
-          </div>
-        </div>
-
-        <div className="header-status-bar">
-          <div className="status-indicator">
-            <span className={`status-dot ${backendStatus}`}></span>
-            <span className="status-text">
-              Backend Status: {backendStatus === 'connected' ? 'Connected (Flask / SQLite)' : backendStatus === 'checking' ? 'Checking connection...' : 'Disconnected (Check Flask server)'}
-            </span>
           </div>
         </div>
       </header>
