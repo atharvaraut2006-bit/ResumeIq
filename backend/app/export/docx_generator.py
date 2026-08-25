@@ -92,13 +92,35 @@ def generate_docx(
             if skills_raw:
                 add_heading("Technical Skills")
                 if isinstance(skills_raw, list):
-                    skills_str = ", ".join([s.get('canonical_name', s.get('skill_name', str(s))) for s in skills_raw])
+                    skills_str = ", ".join([s.get('canonical_name', s.get('skill_name', str(s))) for s in skills_raw if isinstance(s, dict)])
+                    p = doc.add_paragraph(style='List Bullet')
+                    run = p.add_run(skills_str)
+                    run.font.name = font_name
+                    run.font.size = Pt(9.5)
                 else:
                     skills_str = str(skills_raw)
-                p = doc.add_paragraph()
-                run = p.add_run(skills_str)
-                run.font.name = font_name
-                run.font.size = Pt(9.5)
+                    items = [i.strip() for i in skills_str.replace('\n', '•').split('•') if i.strip()]
+                    if items:
+                        for item in items:
+                            p = doc.add_paragraph(style='List Bullet')
+                            if ':' in item:
+                                cat, val = item.split(':', 1)
+                                r_cat = p.add_run(f"{cat.strip()}: ")
+                                r_cat.bold = True
+                                r_cat.font.name = font_name
+                                r_cat.font.size = Pt(9.5)
+                                r_val = p.add_run(val.strip())
+                                r_val.font.name = font_name
+                                r_val.font.size = Pt(9.5)
+                            else:
+                                run = p.add_run(item)
+                                run.font.name = font_name
+                                run.font.size = Pt(9.5)
+                    else:
+                        p = doc.add_paragraph(style='List Bullet')
+                        run = p.add_run(skills_str)
+                        run.font.name = font_name
+                        run.font.size = Pt(9.5)
 
         elif section_key == 'experience':
             exp_list = resume_data.get('experience', [])

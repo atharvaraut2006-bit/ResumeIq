@@ -93,9 +93,10 @@
 .doc-bullet {
     margin: 0 0 0.35rem 0;
     font-size: 0.86rem;
-    line-height: 1.4;
+    line-height: 1.45;
     color: #1f2937;
-    padding-left: 0.5rem;
+    padding-left: 0.85rem;
+    text-indent: -0.85rem;
 }
 
 .doc-project-block {

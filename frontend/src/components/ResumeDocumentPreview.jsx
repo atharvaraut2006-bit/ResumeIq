@@ -36,16 +36,32 @@ const ResumeDocumentPreview = ({
             case 'skills': {
                 const skillsRaw = resumeData.skills_raw || resumeData.skills;
                 if (!skillsRaw) return null;
-                let skillsText = "";
+                let items = [];
                 if (Array.isArray(skillsRaw)) {
-                    skillsText = skillsRaw.map(s => s.canonical_name || s.skill_name || String(s)).join(', ');
+                    const skillsText = skillsRaw.map(s => (typeof s === 'object' ? (s.canonical_name || s.skill_name || String(s)) : String(s))).join(', ');
+                    items = [skillsText];
                 } else {
-                    skillsText = String(skillsRaw);
+                    const skillsText = String(skillsRaw);
+                    items = skillsText.replace(/\n/g, '•').split('•').map(i => i.trim()).filter(Boolean);
                 }
                 return (
                     <div key="skills" className="doc-section">
                         <h4 className="doc-heading">TECHNICAL SKILLS</h4>
-                        <p className="doc-body">{skillsText}</p>
+                        <div className="doc-skills-list">
+                            {items.map((item, idx) => {
+                                if (item.includes(':')) {
+                                    const parts = item.split(':');
+                                    const cat = parts[0];
+                                    const val = parts.slice(1).join(':');
+                                    return (
+                                        <p key={idx} className="doc-bullet">
+                                            • <strong>{cat.trim()}:</strong> {val.trim()}
+                                        </p>
+                                    );
+                                }
+                                return <p key={idx} className="doc-bullet">• {item}</p>;
+                            })}
+                        </div>
                     </div>
                 );
             }

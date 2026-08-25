@@ -139,10 +139,22 @@ def generate_pdf(
             if skills_raw:
                 story.append(Paragraph("TECHNICAL SKILLS", heading_style))
                 if isinstance(skills_raw, list):
-                    skills_str = ", ".join([s.get('canonical_name', s.get('skill_name', str(s))) for s in skills_raw])
+                    skills_str = ", ".join([s.get('canonical_name', s.get('skill_name', str(s))) for s in skills_raw if isinstance(s, dict)])
+                    story.append(Paragraph(f"• {skills_str}", bullet_style))
                 else:
                     skills_str = str(skills_raw)
-                story.append(Paragraph(skills_str, body_style))
+                    # Split by bullet points or newlines for clean indentation
+                    items = [i.strip() for i in skills_str.replace('\n', '•').split('•') if i.strip()]
+                    if items:
+                        for item in items:
+                            if ':' in item:
+                                cat, val = item.split(':', 1)
+                                formatted_item = f"<b>{cat.strip()}:</b> {val.strip()}"
+                            else:
+                                formatted_item = item
+                            story.append(Paragraph(f"• {formatted_item}", bullet_style))
+                    else:
+                        story.append(Paragraph(f"• {skills_str}", bullet_style))
                 story.append(Spacer(1, 4))
 
         elif section_key == 'experience':
