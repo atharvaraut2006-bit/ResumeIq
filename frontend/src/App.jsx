@@ -161,25 +161,25 @@ function App() {
                   className={`tab-btn ${activeTab === 'match' ? 'active' : ''}`}
                   onClick={() => setActiveTab('match')}
                 >
-                  <span>📊</span> Job Match Analysis
+                  Job Match Analysis
                 </button>
                 <button 
                   className={`tab-btn ${activeTab === 'optimize' ? 'active' : ''}`}
                   onClick={() => setActiveTab('optimize')}
                 >
-                  <span>⚡</span> ATS Optimization & Skill Gaps
+                  ATS Optimization & Skill Gaps
                 </button>
                 <button 
                   className={`tab-btn ${activeTab === 'export' ? 'active' : ''}`}
                   onClick={() => setActiveTab('export')}
                 >
-                  <span>📄</span> Resume Builder & Export
+                  Resume Builder & Export
                 </button>
                 <button 
                   className={`tab-btn ${activeTab === 'coach' ? 'active' : ''}`}
                   onClick={() => setActiveTab('coach')}
                 >
-                  <span>🎯</span> Career Strategy & Roadmap
+                  Career Strategy & Roadmap
                 </button>
               </div>
             )}
