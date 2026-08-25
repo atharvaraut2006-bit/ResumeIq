@@ -2,24 +2,37 @@ from app.models.job_match import JobMatch, SkillMatch
 
 def analyze_gaps(job_match: JobMatch):
     """
-    Phase 8: Skill Gap Analysis & Priority Ranking.
-    Consumes Phase 7 output.
-    Pure JD-Based Priority Classification:
-    - High Priority: Mandatory Technical Skills required by the JD.
-    - Moderate Priority: Mandatory Soft Skills & Secondary Technical Requirements.
-    - Low Priority: Optional / Preferred Skills listed in the JD.
+    Phase 8: Domain-Based Skill Gap Analysis.
+    Classifies gaps into:
+    1. Technical Skill Gaps
+    2. Communication & Interpersonal Skill Gaps
+    3. Leadership & Management Skill Gaps
     """
     skill_matches = SkillMatch.query.filter_by(job_match_id=job_match.id).all()
     
-    high_priority = []
-    medium_priority = []
-    low_priority = []
+    technical_gaps = []
+    communication_gaps = []
+    leadership_gaps = []
     
     soft_skill_gaps = []
     weak_evidence = []
     
+    COMMUNICATION_KEYWORDS = {
+        'communication', 'written communication', 'verbal communication', 
+        'presentation', 'documentation', 'collaboration', 'interpersonal', 
+        'stakeholder', 'negotiation', 'writing', 'speaking', 'articulate'
+    }
+    
+    LEADERSHIP_KEYWORDS = {
+        'leadership', 'team leadership', 'management', 'project management', 
+        'agile', 'scrum', 'problem solving', 'time management', 'adaptability', 
+        'critical thinking', 'decision making', 'mentorship', 'strategic', 
+        'planning', 'coordination', 'ownership'
+    }
+    
     for sm in skill_matches:
         if sm.match_type == "missing":
+            sname = sm.skill_name.lower()
             gap = {
                 "skill": sm.skill_name,
                 "required": sm.required,
@@ -29,15 +42,18 @@ def analyze_gaps(job_match: JobMatch):
                 "category": sm.category
             }
             
-            if sm.required and sm.category == "technical":
-                gap["priority"] = "high"
-                high_priority.append(gap)
-            elif sm.required or sm.category == "soft":
+            if any(k in sname for k in COMMUNICATION_KEYWORDS) or (sm.category == "soft" and "communicat" in sname):
+                gap["domain"] = "communication"
                 gap["priority"] = "moderate"
-                medium_priority.append(gap)
-            else:
+                communication_gaps.append(gap)
+            elif any(k in sname for k in LEADERSHIP_KEYWORDS) or sm.category == "soft":
+                gap["domain"] = "leadership"
                 gap["priority"] = "low"
-                low_priority.append(gap)
+                leadership_gaps.append(gap)
+            else:
+                gap["domain"] = "technical"
+                gap["priority"] = "high"
+                technical_gaps.append(gap)
                 
         elif sm.match_type == "semantic" and sm.category == "soft":
             if sm.confidence and sm.confidence < 0.80:
@@ -64,9 +80,13 @@ def analyze_gaps(job_match: JobMatch):
 
     return {
         "skill_gaps": {
-            "high_priority": high_priority,
-            "medium_priority": medium_priority,
-            "low_priority": low_priority
+            "technical_gaps": technical_gaps,
+            "communication_gaps": communication_gaps,
+            "leadership_gaps": leadership_gaps,
+            # Backwards compatibility aliases
+            "high_priority": technical_gaps,
+            "medium_priority": communication_gaps,
+            "low_priority": leadership_gaps
         },
         "soft_skill_gaps": soft_skill_gaps,
         "weak_evidence": weak_evidence,

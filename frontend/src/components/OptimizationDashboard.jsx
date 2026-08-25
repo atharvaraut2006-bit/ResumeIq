@@ -303,17 +303,17 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                     <div className="opt-section">
                         <h3>SKILL GAP ANALYSIS</h3>
 
-                        {/* 3 Side-by-Side Priority Selector Cards */}
+                        {/* 3 Side-by-Side Domain Selector Cards */}
                         <div className="priority-tier-cards-row">
                             <div 
                                 className={`priority-tier-card high ${activeGapFilter === 'high' ? 'active' : ''}`}
                                 onClick={() => setActiveGapFilter(activeGapFilter === 'high' ? 'all' : 'high')}
                             >
                                 <div className="pt-header">
-                                    <span className="pt-badge red">🔴 HIGH PRIORITY</span>
+                                    <span className="pt-badge red">🔴 TECHNICAL SKILLS</span>
                                     <span className="pt-count">{allHighGaps.length}</span>
                                 </div>
-                                <div className="pt-desc">Missing Required Technical Skills</div>
+                                <div className="pt-desc">Missing Technical & Engineering Skills</div>
                             </div>
 
                             <div 
@@ -321,10 +321,10 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                                 onClick={() => setActiveGapFilter(activeGapFilter === 'moderate' ? 'all' : 'moderate')}
                             >
                                 <div className="pt-header">
-                                    <span className="pt-badge yellow">🟡 MODERATE PRIORITY</span>
+                                    <span className="pt-badge yellow">🟡 COMMUNICATION SKILLS</span>
                                     <span className="pt-count">{allModerateGaps.length}</span>
                                 </div>
-                                <div className="pt-desc">Missing Soft & Role Skills</div>
+                                <div className="pt-desc">Missing Communication & Writing Skills</div>
                             </div>
 
                             <div 
@@ -332,17 +332,17 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                                 onClick={() => setActiveGapFilter(activeGapFilter === 'low' ? 'all' : 'low')}
                             >
                                 <div className="pt-header">
-                                    <span className="pt-badge teal">🔵 LOW PRIORITY</span>
+                                    <span className="pt-badge teal">🔵 LEADERSHIP SKILLS</span>
                                     <span className="pt-count">{allLowGaps.length}</span>
                                 </div>
-                                <div className="pt-desc">Missing Preferred & Optional Skills</div>
+                                <div className="pt-desc">Missing Leadership & Management Skills</div>
                             </div>
                         </div>
                         
-                        {/* High Priority Skill Gaps */}
+                        {/* Technical Skill Gaps */}
                         {showHigh && allHighGaps.length > 0 && (
                             <div className="gap-category high-priority mt-3">
-                                <h4>HIGH PRIORITY (Missing Required Skills)</h4>
+                                <h4>TECHNICAL SKILL GAPS (Missing Engineering Requirements)</h4>
                                 <div className="gap-grid">
                                     {allHighGaps.map((g, i) => (
                                         <div key={i} className="gap-item-card high-card">
@@ -353,10 +353,10 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                             </div>
                         )}
                         
-                        {/* Moderate Priority Skill Gaps */}
+                        {/* Communication Skill Gaps */}
                         {showModerate && allModerateGaps.length > 0 && (
                             <div className="gap-category medium-priority mt-3">
-                                <h4>MODERATE PRIORITY (Missing Role & Soft Skills)</h4>
+                                <h4>COMMUNICATION SKILL GAPS (Interpersonal & Presentation)</h4>
                                 <div className="gap-grid">
                                     {allModerateGaps.map((g, i) => (
                                         <div key={i} className="gap-item-card moderate-card">
@@ -367,10 +367,10 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                             </div>
                         )}
 
-                        {/* Low Priority Skill Gaps */}
+                        {/* Leadership Skill Gaps */}
                         {showLow && allLowGaps.length > 0 && (
                             <div className="gap-category low-priority mt-3">
-                                <h4>LOW PRIORITY (Missing Preferred & Optional Skills)</h4>
+                                <h4>LEADERSHIP & MANAGEMENT SKILL GAPS (Organization & Strategy)</h4>
                                 <div className="gap-grid">
                                     {allLowGaps.map((g, i) => (
                                         <div key={i} className="gap-item-card low-card">
