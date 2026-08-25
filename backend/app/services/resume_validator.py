@@ -1,28 +1,48 @@
 import re
 from flask import current_app
 
+# Only strict explicit non-resume document patterns
 NON_RESUME_NEGATIVE_PATTERNS = [
-    r'\bassignment\b', r'\blab report\b', r'\bhomework\b', r'\bproblem set\b',
-    r'\bquestion\s+\d+\b', r'\breferences\b.*\bdoi:\b', r'\bieee\b', r'\babstract\b.*\bintroduction\b',
-    r'\btimetable\b', r'\bclass schedule\b', r'\bmarksheet\b', r'\bgrade card\b',
-    r'\bcertificate of completion\b', r'\bthis is to certify that\b', r'\bcourse syllabus\b'
+    r'\bexam\s+question\s+paper\b',
+    r'\bclass\s+timetable\b',
+    r'\bsemester\s+grade\s+card\b',
+    r'\bcourse\s+syllabus\s+20\d\d\b'
 ]
 
 SECTION_KEYWORDS = {
-    'contact': [r'[\w\.-]+@[\w\.-]+\.\w+', r'\+?\d[\d\s-]{8,}\d', r'linkedin\.com', r'github\.com'],
-    'education': [r'\beducation\b', r'\bdegree\b', r'\buniversity\b', r'\bcollege\b', r'\bb\.tech\b', r'\bb\.s\b', r'\bbachelor\b', r'\bmaster\b'],
-    'skills': [r'\bskills\b', r'\btechnical skills\b', r'\bprogramming\b', r'\btechnologies\b', r'\btools\b', r'\bproficiencies\b'],
-    'experience': [r'\bexperience\b', r'\bwork history\b', r'\bemployment\b', r'\binternship\b', r'\bprofessional experience\b'],
-    'projects': [r'\bprojects\b', r'\bpersonal projects\b', r'\bacademic projects\b', r'\bkey projects\b']
+    'contact': [
+        r'[\w\.-]+@[\w\.-]+\.\w+',
+        r'\+?\d[\d\s-]{8,}\d',
+        r'linkedin\.com',
+        r'github\.com',
+        r'\bphone\b',
+        r'\bemail\b'
+    ],
+    'education': [
+        r'\beducation\b', r'\bdegree\b', r'\buniversity\b', r'\bcollege\b',
+        r'\bb\.tech\b', r'\bbtech\b', r'\bb\.e\b', r'\bcomputer science\b',
+        r'\bbachelor\b', r'\bmaster\b', r'\bcgpa\b', r'\bgpa\b', r'\bhsc\b', r'\bssc\b'
+    ],
+    'skills': [
+        r'\bskills\b', r'\btechnical skills\b', r'\bprogramming\b', r'\btechnologies\b',
+        r'\btools\b', r'\bproficiencies\b', r'\bc\+\+\b', r'\bpython\b', r'\bjava\b', r'\bhtml\b'
+    ],
+    'experience': [
+        r'\bexperience\b', r'\bwork history\b', r'\bemployment\b', r'\binternship\b',
+        r'\bdeveloper\b', r'\bengineer\b', r'\banalyst\b', r'\bwork experience\b'
+    ],
+    'projects': [
+        r'\bprojects\b', r'\bpersonal projects\b', r'\bacademic projects\b', r'\bkey projects\b', r'\bproject\b'
+    ]
 }
 
 def validate_resume_content_level2(raw_text: str) -> dict:
     """
     Level 2 Resume Content Classification:
     Evaluates multi-signal structure (Contact, Education, Skills, Experience, Projects)
-    and checks for negative non-resume patterns (assignments, papers, marksheets, timetables).
+    and checks for negative non-resume patterns.
     """
-    if not raw_text or len(raw_text.strip()) < 50:
+    if not raw_text or len(raw_text.strip()) < 20:
         return {
             "is_resume": False,
             "confidence": 0.0,
@@ -60,26 +80,21 @@ def validate_resume_content_level2(raw_text: str) -> dict:
         if found:
             signal_score += 0.20
             
-    # Contact Info Bonus (Email/Phone is strong evidence of a person's resume)
+    # Contact Info Bonus
     if signals.get('contact'):
         signal_score += 0.15
         
-    # Penalty if negative hits exist
-    if negative_hits == 1:
-        signal_score -= 0.25
-        
     confidence = min(0.98, max(0.05, round(signal_score, 2)))
-    threshold = current_app.config.get('RESUME_VALIDATION_THRESHOLD', 0.70)
+    threshold = current_app.config.get('RESUME_VALIDATION_THRESHOLD', 0.35)
     
-    # Fresher resilience check: Education + Skills + Projects (even without experience) is VALID!
-    fresher_valid = signals.get('education') and signals.get('skills') and (signals.get('projects') or signals.get('contact'))
-    
-    is_resume = (confidence >= threshold) or fresher_valid
+    # Resilient check: ANY 2 signals detected or presence of skills/education is VALID!
+    total_signals_detected = sum(1 for v in signals.values() if v)
+    is_resume = (confidence >= threshold) or (total_signals_detected >= 2) or signals.get('skills') or signals.get('education')
     
     if is_resume:
         return {
             "is_resume": True,
-            "confidence": max(confidence, 0.75),
+            "confidence": max(confidence, 0.85),
             "document_type": "resume",
             "status": "VALID",
             "reason": "Resume content and structure verified successfully.",
