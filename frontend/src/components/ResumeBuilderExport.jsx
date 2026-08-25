@@ -30,7 +30,11 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
 
     const handleFieldEdit = (field, value) => {
         if (onUpdateResumeData && resumeData) {
-            onUpdateResumeData({ ...resumeData, [field]: value });
+            const updated = { ...resumeData, [field]: value };
+            if (field === 'skills') {
+                updated.skills_raw = Array.isArray(value) ? value.join(', ') : value;
+            }
+            onUpdateResumeData(updated);
         }
     };
 

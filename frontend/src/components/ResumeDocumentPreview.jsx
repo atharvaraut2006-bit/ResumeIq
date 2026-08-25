@@ -34,7 +34,7 @@ const ResumeDocumentPreview = ({
             }
 
             case 'skills': {
-                const skillsRaw = resumeData.skills_raw || resumeData.skills;
+                const skillsRaw = resumeData.skills || resumeData.skills_raw;
                 if (!skillsRaw) return null;
                 let items = [];
                 if (Array.isArray(skillsRaw)) {
