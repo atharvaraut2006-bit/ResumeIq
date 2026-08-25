@@ -339,6 +339,68 @@ INITIAL_KNOWLEDGE_BASE = [
         "canonical_name": "Software Engineering",
         "category": "Core Subjects",
         "aliases": ["software engineering", "sdlc", "software development life cycle"]
+    },
+    # Communication Skills
+    {
+        "canonical_name": "Communication Skills",
+        "category": "soft",
+        "aliases": ["communication", "communication skills", "written communication", "verbal communication", "interpersonal skills", "effective communication", "good communication", "writing skills"]
+    },
+    {
+        "canonical_name": "Presentation Skills",
+        "category": "soft",
+        "aliases": ["presentation", "presentation skills", "public speaking", "demonstration"]
+    },
+    {
+        "canonical_name": "Documentation",
+        "category": "soft",
+        "aliases": ["documentation", "technical writing", "api documentation", "project documentation"]
+    },
+    {
+        "canonical_name": "Collaboration",
+        "category": "soft",
+        "aliases": ["collaboration", "cross-functional collaboration", "team collaboration", "teamwork", "working in a team"]
+    },
+    {
+        "canonical_name": "Stakeholder Management",
+        "category": "soft",
+        "aliases": ["stakeholder management", "stakeholder communication", "client interaction", "client relationship"]
+    },
+    # Leadership & Management Skills
+    {
+        "canonical_name": "Leadership",
+        "category": "soft",
+        "aliases": ["leadership", "team leadership", "technical leadership", "leading teams", "lead"]
+    },
+    {
+        "canonical_name": "Project Management",
+        "category": "soft",
+        "aliases": ["project management", "program management", "agile management", "project planning", "scrum master"]
+    },
+    {
+        "canonical_name": "Agile & Scrum",
+        "category": "soft",
+        "aliases": ["agile", "scrum", "agile methodology", "scrum methodology", "kanban", "sprint planning"]
+    },
+    {
+        "canonical_name": "Problem Solving",
+        "category": "soft",
+        "aliases": ["problem solving", "problem-solving", "analytical thinking", "critical thinking", "troubleshooting"]
+    },
+    {
+        "canonical_name": "Time Management",
+        "category": "soft",
+        "aliases": ["time management", "prioritization", "task management", "deadline management"]
+    },
+    {
+        "canonical_name": "Adaptability",
+        "category": "soft",
+        "aliases": ["adaptability", "flexibility", "quick learner", "fast learner", "continuous learning"]
+    },
+    {
+        "canonical_name": "Mentorship",
+        "category": "soft",
+        "aliases": ["mentorship", "mentoring", "coaching", "code reviews", "peer review"]
     }
 ]
 

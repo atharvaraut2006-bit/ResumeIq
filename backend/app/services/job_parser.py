@@ -10,6 +10,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from app.services.skill_knowledge_base import initialize_knowledge_base
+
 def analyze_and_store_job(job_id: int):
     """
     Analyzes JD text, extracts requirements and skills, normalizes them against the
@@ -19,12 +21,23 @@ def analyze_and_store_job(job_id: int):
     if not job or not job.description:
         raise ValueError("Job description not found")
         
+    initialize_knowledge_base()
     text = job.description
     sections = detect_job_sections(text)
     
     extracted_skills_dict = {} # canonical_id -> data
     
-    # Analyze sections for technical skills
+    # Also extract skills from full text
+    full_text_skills = extract_skills_from_text(text)
+    for skill_id, matched_text in full_text_skills:
+        extracted_skills_dict[skill_id] = {
+            "importance": "required",
+            "confidence": 0.85,
+            "evidence_text": _extract_snippet(text, matched_text),
+            "source_section": "general"
+        }
+    
+    # Analyze sections for technical & soft skills
     for section_name, section_text in sections.items():
         importance = "optional"
         if section_name == "required_requirements":

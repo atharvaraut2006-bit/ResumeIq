@@ -397,15 +397,19 @@
 .pt-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
 }
 
 .pt-badge {
     font-size: 0.75rem;
     font-weight: 800;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     text-transform: uppercase;
+    flex: 1;
+    min-width: 0;
+    line-height: 1.25;
 }
 
 .pt-badge.red { color: #dc3545; }
@@ -416,6 +420,10 @@
     font-size: 1.5rem;
     font-weight: 800;
     color: #212529;
+    margin-left: auto;
+    padding-left: 0.4rem;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 .pt-desc {
