@@ -212,97 +212,116 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                         </div>
                     </div>
 
-                    {/* 3. Live Resume Editor (Write & Edit All Sections) */}
-                    <div className="panel-card mt-3">
-                        <h3>3. LIVE RESUME EDITOR (WRITE & EDIT)</h3>
-                        <p className="small-text">Edit or write text for any section of your resume in real-time before export.</p>
-                        <div className="live-editor-group">
-                            <div className="editor-field">
-                                <label>Full Name:</label>
-                                <input 
-                                    type="text" 
-                                    value={resumeData?.contact?.name || ''} 
-                                    onChange={e => handleContactEdit('name', e.target.value)} 
-                                    placeholder="Candidate Full Name"
-                                />
+                    {/* 3. MS Word Rich Text Formatting Toolbar */}
+                    <div className="panel-card mt-3 word-toolbar-card">
+                        <h3>3. MS WORD RICH TEXT FORMATTING TOOLBAR</h3>
+                        <p className="small-text">Select any text directly on your resume preview paper and use the formatting tools below to apply bold, italic, underline, or lists!</p>
+                        
+                        <div className="word-toolbar">
+                            <div className="toolbar-group">
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn btn-bold" 
+                                    title="Bold (Ctrl+B)" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('bold', false, null); }}
+                                >
+                                    <strong>B</strong>
+                                </button>
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn btn-italic" 
+                                    title="Italic (Ctrl+I)" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('italic', false, null); }}
+                                >
+                                    <em>I</em>
+                                </button>
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn btn-underline" 
+                                    title="Underline (Ctrl+U)" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('underline', false, null); }}
+                                >
+                                    <u>U</u>
+                                </button>
                             </div>
-                            <div className="editor-field">
-                                <label>Email & Phone:</label>
-                                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <input 
-                                        type="text" 
-                                        value={resumeData?.contact?.email || ''} 
-                                        onChange={e => handleContactEdit('email', e.target.value)} 
-                                        placeholder="Email Address"
-                                    />
-                                    <input 
-                                        type="text" 
-                                        value={resumeData?.contact?.phone || ''} 
-                                        onChange={e => handleContactEdit('phone', e.target.value)} 
-                                        placeholder="Phone Number"
-                                    />
-                                </div>
+
+                            <div className="toolbar-divider"></div>
+
+                            <div className="toolbar-group">
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn" 
+                                    title="Bullet List" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList', false, null); }}
+                                >
+                                    • Bullet List
+                                </button>
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn" 
+                                    title="Numbered List" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList', false, null); }}
+                                >
+                                    1. List
+                                </button>
                             </div>
-                            <div className="editor-field">
-                                <label>Summary / Objective:</label>
-                                <textarea 
-                                    rows={3} 
-                                    value={resumeData?.summary || ''} 
-                                    onChange={e => handleFieldEdit('summary', e.target.value)}
-                                    placeholder="Write your professional summary..."
-                                />
+
+                            <div className="toolbar-divider"></div>
+
+                            <div className="toolbar-group">
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn" 
+                                    title="Align Left" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('justifyLeft', false, null); }}
+                                >
+                                    ⯇ Left
+                                </button>
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn" 
+                                    title="Align Center" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('justifyCenter', false, null); }}
+                                >
+                                    ≡ Center
+                                </button>
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn" 
+                                    title="Align Right" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('justifyRight', false, null); }}
+                                >
+                                    ⯈ Right
+                                </button>
                             </div>
-                            <div className="editor-field">
-                                <label>Technical Skills (Comma Separated):</label>
-                                <textarea 
-                                    rows={2} 
-                                    value={Array.isArray(resumeData?.skills) ? resumeData.skills.map(s => typeof s === 'object' ? (s.canonical_name || s.skill_name || '') : String(s)).filter(Boolean).join(', ') : (resumeData?.skills || '')} 
-                                    onChange={e => handleFieldEdit('skills', e.target.value.split(',').map(s => s.trim()))}
-                                    placeholder="C++, Python, React, SQL, Java, AWS..."
-                                />
-                            </div>
-                            <div className="editor-field">
-                                <label>Projects (Title & Details):</label>
-                                <input 
-                                    type="text" 
-                                    value={resumeData?.projects?.[0]?.name || resumeData?.projects?.[0]?.title || ''} 
-                                    onChange={e => handleArrayItemEdit('projects', 0, 'name', e.target.value)} 
-                                    placeholder="Project Title (e.g. Weather Forecast Website)"
-                                    style={{ marginBottom: '0.3rem' }}
-                                />
-                                <textarea 
-                                    rows={3} 
-                                    value={resumeData?.projects?.[0]?.raw || resumeData?.projects?.[0]?.description || ''} 
-                                    onChange={e => handleArrayItemEdit('projects', 0, 'raw', e.target.value)}
-                                    placeholder="Project description & key bullet points..."
-                                />
-                            </div>
-                            <div className="editor-field">
-                                <label>Work Experience (Role & Details):</label>
-                                <textarea 
-                                    rows={3} 
-                                    value={resumeData?.experience?.[0]?.raw || resumeData?.experience?.[0]?.description || ''} 
-                                    onChange={e => handleArrayItemEdit('experience', 0, 'raw', e.target.value)}
-                                    placeholder="Job title, company & key responsibilities..."
-                                />
-                            </div>
-                            <div className="editor-field">
-                                <label>Education (Degree & Institution):</label>
-                                <textarea 
-                                    rows={2} 
-                                    value={resumeData?.education?.[0]?.raw || (resumeData?.education?.[0]?.degree ? `${resumeData.education[0].degree} - ${resumeData.education[0].institution || ''}` : '')} 
-                                    onChange={e => handleArrayItemEdit('education', 0, 'raw', e.target.value)}
-                                    placeholder="B.Tech Computer Science - VIT (CGPA: 9.24)"
-                                />
-                            </div>
-                            <div className="editor-field">
-                                <label>Certifications & Achievements:</label>
-                                <textarea 
-                                    rows={2} 
-                                    value={resumeData?.certifications?.[0]?.raw || resumeData?.certifications?.[0]?.name || ''} 
-                                    onChange={e => handleArrayItemEdit('certifications', 0, 'raw', e.target.value)}
-                                    placeholder="AWS Certified Developer, NPTEL IIT Madras..."
-                                />
+
+                            <div className="toolbar-divider"></div>
+
+                            <div className="toolbar-group">
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn" 
+                                    title="Undo" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('undo', false, null); }}
+                                >
+                                    ↩ Undo
+                                </button>
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn" 
+                                    title="Redo" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('redo', false, null); }}
+                                >
+                                    ↪ Redo
+                                </button>
+                                <button 
+                                    type="button"
+                                    className="toolbar-btn btn-clear" 
+                                    title="Clear Formatting" 
+                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('removeFormat', false, null); }}
+                                >
+                                    🧹 Clear
+                                </button>
                             </div>
                         </div>
                     </div>

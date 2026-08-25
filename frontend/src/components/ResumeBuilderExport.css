@@ -70,6 +70,64 @@
     letter-spacing: 0.03em;
 }
 
+.word-toolbar-card {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+}
+
+.word-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background-color: #cbd5e1;
+    margin: 0 0.2rem;
+}
+
+.toolbar-btn {
+    background: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.toolbar-btn:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.toolbar-btn.btn-bold { font-weight: 900; }
+.toolbar-btn.btn-italic { font-style: italic; }
+.toolbar-btn.btn-underline { text-decoration: underline; }
+
+.toolbar-btn.btn-clear:hover {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: #ffffff;
+}
+
 .live-editor-group {
     display: flex;
     flex-direction: column;
