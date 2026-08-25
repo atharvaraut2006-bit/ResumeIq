@@ -28,6 +28,47 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
     const [showSummaryModal, setShowSummaryModal] = useState(false);
     const [atsCheckScore, setAtsCheckScore] = useState(88);
 
+    const [formatStates, setFormatStates] = useState({
+        bold: false,
+        italic: false,
+        underline: false,
+        bulletList: false,
+        numberList: false,
+        alignLeft: false,
+        alignCenter: false,
+        alignRight: false
+    });
+
+    const updateFormatStates = () => {
+        try {
+            setFormatStates({
+                bold: document.queryCommandState('bold'),
+                italic: document.queryCommandState('italic'),
+                underline: document.queryCommandState('underline'),
+                bulletList: document.queryCommandState('insertUnorderedList'),
+                numberList: document.queryCommandState('insertOrderedList'),
+                alignLeft: document.queryCommandState('justifyLeft'),
+                alignCenter: document.queryCommandState('justifyCenter'),
+                alignRight: document.queryCommandState('justifyRight')
+            });
+        } catch (e) {}
+    };
+
+    useEffect(() => {
+        const handleSelection = () => {
+            updateFormatStates();
+        };
+        document.addEventListener('selectionchange', handleSelection);
+        return () => {
+            document.removeEventListener('selectionchange', handleSelection);
+        };
+    }, []);
+
+    const applyFormat = (cmd, val = null) => {
+        document.execCommand(cmd, false, val);
+        setTimeout(updateFormatStates, 30);
+    };
+
     const handleFieldEdit = (field, value) => {
         if (onUpdateResumeData && resumeData) {
             const updated = { ...resumeData, [field]: value };
@@ -212,34 +253,34 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                         </div>
                     </div>
 
-                    {/* 3. MS Word Rich Text Formatting Toolbar */}
+                    {/* 3. Rich Text Formatting Toolbar */}
                     <div className="panel-card mt-3 word-toolbar-card">
-                        <h3>3. MS WORD RICH TEXT FORMATTING TOOLBAR</h3>
+                        <h3>3. RICH TEXT FORMATTING TOOLBAR</h3>
                         <p className="small-text">Select any text directly on your resume preview paper and use the formatting tools below to apply bold, italic, underline, or lists!</p>
                         
                         <div className="word-toolbar">
                             <div className="toolbar-group">
                                 <button 
                                     type="button"
-                                    className="toolbar-btn btn-bold" 
+                                    className={`toolbar-btn btn-bold ${formatStates.bold ? 'active' : ''}`} 
                                     title="Bold (Ctrl+B)" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('bold', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('bold'); }}
                                 >
                                     <strong>B</strong>
                                 </button>
                                 <button 
                                     type="button"
-                                    className="toolbar-btn btn-italic" 
+                                    className={`toolbar-btn btn-italic ${formatStates.italic ? 'active' : ''}`} 
                                     title="Italic (Ctrl+I)" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('italic', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('italic'); }}
                                 >
                                     <em>I</em>
                                 </button>
                                 <button 
                                     type="button"
-                                    className="toolbar-btn btn-underline" 
+                                    className={`toolbar-btn btn-underline ${formatStates.underline ? 'active' : ''}`} 
                                     title="Underline (Ctrl+U)" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('underline', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('underline'); }}
                                 >
                                     <u>U</u>
                                 </button>
@@ -250,17 +291,17 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                             <div className="toolbar-group">
                                 <button 
                                     type="button"
-                                    className="toolbar-btn" 
+                                    className={`toolbar-btn ${formatStates.bulletList ? 'active' : ''}`} 
                                     title="Bullet List" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('insertUnorderedList'); }}
                                 >
                                     • Bullet List
                                 </button>
                                 <button 
                                     type="button"
-                                    className="toolbar-btn" 
+                                    className={`toolbar-btn ${formatStates.numberList ? 'active' : ''}`} 
                                     title="Numbered List" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('insertOrderedList'); }}
                                 >
                                     1. List
                                 </button>
@@ -271,25 +312,25 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                             <div className="toolbar-group">
                                 <button 
                                     type="button"
-                                    className="toolbar-btn" 
+                                    className={`toolbar-btn ${formatStates.alignLeft ? 'active' : ''}`} 
                                     title="Align Left" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('justifyLeft', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('justifyLeft'); }}
                                 >
                                     ⯇ Left
                                 </button>
                                 <button 
                                     type="button"
-                                    className="toolbar-btn" 
+                                    className={`toolbar-btn ${formatStates.alignCenter ? 'active' : ''}`} 
                                     title="Align Center" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('justifyCenter', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('justifyCenter'); }}
                                 >
                                     ≡ Center
                                 </button>
                                 <button 
                                     type="button"
-                                    className="toolbar-btn" 
+                                    className={`toolbar-btn ${formatStates.alignRight ? 'active' : ''}`} 
                                     title="Align Right" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('justifyRight', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('justifyRight'); }}
                                 >
                                     ⯈ Right
                                 </button>
@@ -302,7 +343,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     type="button"
                                     className="toolbar-btn" 
                                     title="Undo" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('undo', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('undo'); }}
                                 >
                                     ↩ Undo
                                 </button>
@@ -310,7 +351,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     type="button"
                                     className="toolbar-btn" 
                                     title="Redo" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('redo', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('redo'); }}
                                 >
                                     ↪ Redo
                                 </button>
@@ -318,7 +359,7 @@ const ResumeBuilderExport = ({ resumeId, versionId, jobId, resumeData, onUpdateR
                                     type="button"
                                     className="toolbar-btn btn-clear" 
                                     title="Clear Formatting" 
-                                    onMouseDown={(e) => { e.preventDefault(); document.execCommand('removeFormat', false, null); }}
+                                    onMouseDown={(e) => { e.preventDefault(); applyFormat('removeFormat'); }}
                                 >
                                     🧹 Clear
                                 </button>

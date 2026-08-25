@@ -281,11 +281,6 @@ const ResumeDocumentPreview = ({
 
     return (
         <div className="editable-paper-wrapper">
-            {isEditable && (
-                <div className="editable-hint-badge">
-                    ✏️ Live Typable Editor — Click anywhere on the resume to edit text directly!
-                </div>
-            )}
             <div 
                 className={`doc-preview-paper template-${templateId}`}
                 contentEditable={isEditable}
