@@ -22,6 +22,10 @@ function App() {
   const [matchData, setMatchData] = useState(null);
   const [activeTab, setActiveTab] = useState('match');
 
+  // Strategy & Optimization Coach Persistence State
+  const [coachPlanData, setCoachPlanData] = useState(null);
+  const [coachAcceptedRecs, setCoachAcceptedRecs] = useState([]);
+
   // Auth Modal State
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState('signin');
@@ -42,15 +46,21 @@ function App() {
     setResumeData({ ...data, id: resumeId });
     setResumeSkills(skills);
     setFilename(name);
+    setCoachPlanData(null);
+    setCoachAcceptedRecs([]);
   };
 
   const handleMatchSuccess = (matchResult) => {
     setMatchData(matchResult);
     setActiveTab('match');
+    setCoachPlanData(null);
+    setCoachAcceptedRecs([]);
   };
 
   const handleAnalyzeAnother = () => {
     setMatchData(null);
+    setCoachPlanData(null);
+    setCoachAcceptedRecs([]);
   };
 
   const resetAll = () => {
@@ -58,6 +68,8 @@ function App() {
     setResumeSkills(null);
     setFilename('');
     setMatchData(null);
+    setCoachPlanData(null);
+    setCoachAcceptedRecs([]);
   };
 
   const handleVersionFinalized = (finalVersion, parsedData) => {
@@ -237,6 +249,10 @@ function App() {
                 resumeData={resumeData}
                 onUpdateResumeData={handleUpdateResumeData}
                 onNavigateToExport={() => setActiveTab('export')}
+                planData={coachPlanData}
+                setPlanData={setCoachPlanData}
+                acceptedRecs={coachAcceptedRecs}
+                setAcceptedRecs={setCoachAcceptedRecs}
               />
             )}
           </div>

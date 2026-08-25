@@ -4,20 +4,41 @@ import './ImprovementCoach.css';
 
 import { API_BASE_URL } from '../services/api';
 
-const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onNavigateToExport }) => {
+const ImprovementCoach = ({ 
+    resumeId, 
+    jobId, 
+    resumeData, 
+    onUpdateResumeData, 
+    onNavigateToExport,
+    planData: parentPlanData,
+    setPlanData: setParentPlanData,
+    acceptedRecs: parentAcceptedRecs,
+    setAcceptedRecs: setParentAcceptedRecs
+}) => {
     const { token } = useAuth();
-    const [planData, setPlanData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    
+    // Internal fallback states if parent props not provided
+    const [localPlanData, setLocalPlanData] = useState(null);
+    const [localAcceptedRecs, setLocalAcceptedRecs] = useState([]);
+
+    const planData = parentPlanData !== undefined ? parentPlanData : localPlanData;
+    const setPlanData = setParentPlanData || setLocalPlanData;
+
+    const acceptedRecs = parentAcceptedRecs !== undefined ? parentAcceptedRecs : localAcceptedRecs;
+    const setAcceptedRecs = setParentAcceptedRecs || setLocalAcceptedRecs;
+
+    const [loading, setLoading] = useState(!planData);
     const [error, setError] = useState(null);
     const [filterCategory, setFilterCategory] = useState('all'); // 'all', 'quick', 'deep'
-    const [acceptedRecs, setAcceptedRecs] = useState([]);
     const [applyingId, setApplyingId] = useState(null);
 
     useEffect(() => {
-        if (resumeId && jobId) {
+        if (resumeId && jobId && !planData) {
             fetchImprovementPlan();
+        } else if (planData) {
+            setLoading(false);
         }
-    }, [resumeId, jobId]);
+    }, [resumeId, jobId, planData]);
 
     const fetchImprovementPlan = async () => {
         setLoading(true);
@@ -44,30 +65,37 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
     const handleAcceptRecommendation = (rec) => {
         setApplyingId(rec.id);
         
-        // Update local status
-        setPlanData(prev => ({
-            ...prev,
-            recommendations: prev.recommendations.map(r => 
+        // Update plan state
+        if (planData && planData.recommendations) {
+            const updatedRecs = planData.recommendations.map(r => 
                 r.id === rec.id ? { ...r, status: 'accepted' } : r
-            )
-        }));
+            );
+            setPlanData({
+                ...planData,
+                recommendations: updatedRecs
+            });
+        }
 
         setAcceptedRecs(prev => {
-            if (prev.some(r => r.id === rec.id)) return prev;
-            return [...prev, rec];
+            const list = Array.isArray(prev) ? prev : [];
+            if (list.some(r => r.id === rec.id)) return list;
+            return [...list, rec];
         });
 
         setTimeout(() => setApplyingId(null), 300);
     };
 
     const handleRejectRecommendation = (recId) => {
-        setPlanData(prev => ({
-            ...prev,
-            recommendations: prev.recommendations.map(r => 
+        if (planData && planData.recommendations) {
+            const updatedRecs = planData.recommendations.map(r => 
                 r.id === recId ? { ...r, status: 'rejected' } : r
-            )
-        }));
-        setAcceptedRecs(prev => prev.filter(r => r.id !== recId));
+            );
+            setPlanData({
+                ...planData,
+                recommendations: updatedRecs
+            });
+        }
+        setAcceptedRecs(prev => (Array.isArray(prev) ? prev.filter(r => r.id !== recId) : []));
     };
 
     const handleApplyAllAndRedirect = () => {
@@ -80,9 +108,9 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
         let rawSkillsText = resumeData.skills_raw || "";
         let newSummary = resumeData.summary || "";
 
-        acceptedRecs.forEach(rec => {
+        (acceptedRecs || []).forEach(rec => {
             // Extract keyword if it's a missing keyword suggestion
-            const kwMatch = rec.title.match(/['"]([^'"]+)['"]/);
+            const kwMatch = rec.title ? rec.title.match(/['"]([^'"]+)['"]/) : null;
             if (kwMatch && kwMatch[1]) {
                 const kw = kwMatch[1].trim();
                 if (!currentSkills.includes(kw)) {
@@ -94,7 +122,6 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
             } else if (rec.category === 'summary' && rec.after_text) {
                 newSummary = rec.after_text;
             } else if (rec.after_text) {
-                // Check if after_text contains skills list
                 const cleanAfter = rec.after_text.replace(/^[•\-\*\s]+/, '').trim();
                 if (cleanAfter.includes(':')) {
                     rawSkillsText += "\n" + cleanAfter;
@@ -130,9 +157,9 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
         return <div className="coach-error-card">⚠️ {error}</div>;
     }
 
-    const { career_readiness, strengths, recommendations, learning_suggestions } = planData;
+    const { career_readiness, strengths, recommendations, learning_suggestions } = planData || {};
 
-    const filteredRecommendations = recommendations.filter(r => {
+    const filteredRecommendations = (recommendations || []).filter(r => {
         if (filterCategory === 'quick') return ['missing_keywords', 'summary', 'ats'].includes(r.category);
         if (filterCategory === 'deep') return ['experience', 'projects', 'quantification'].includes(r.category);
         return true;
@@ -147,31 +174,33 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
             </div>
 
             {/* Career Readiness Score Summary - All Blue Cards */}
-            <div className="career-readiness-grid">
-                <div className="readiness-card">
-                    <span className="readiness-label">Overall Readiness</span>
-                    <span className="readiness-val">{career_readiness.overall_score}%</span>
-                    <span className="readiness-sub">Composite Index</span>
-                </div>
+            {career_readiness && (
+                <div className="career-readiness-grid">
+                    <div className="readiness-card">
+                        <span className="readiness-label">Overall Readiness</span>
+                        <span className="readiness-val">{career_readiness.overall_score}%</span>
+                        <span className="readiness-sub">Composite Index</span>
+                    </div>
 
-                <div className="readiness-card">
-                    <span className="readiness-label">Resume Quality</span>
-                    <span className="readiness-val">{career_readiness.resume_quality}%</span>
-                    <span className="readiness-sub">Structure & Content</span>
-                </div>
+                    <div className="readiness-card">
+                        <span className="readiness-label">Resume Quality</span>
+                        <span className="readiness-val">{career_readiness.resume_quality}%</span>
+                        <span className="readiness-sub">Structure & Content</span>
+                    </div>
 
-                <div className="readiness-card">
-                    <span className="readiness-label">ATS Readiness</span>
-                    <span className="readiness-val">{career_readiness.ats_readiness}%</span>
-                    <span className="readiness-sub">Parser Compliance</span>
-                </div>
+                    <div className="readiness-card">
+                        <span className="readiness-label">ATS Readiness</span>
+                        <span className="readiness-val">{career_readiness.ats_readiness}%</span>
+                        <span className="readiness-sub">Parser Compliance</span>
+                    </div>
 
-                <div className="readiness-card">
-                    <span className="readiness-label">JD Skill Coverage</span>
-                    <span className="readiness-val">{career_readiness.skill_coverage}%</span>
-                    <span className="readiness-sub">Target Match</span>
+                    <div className="readiness-card">
+                        <span className="readiness-label">JD Skill Coverage</span>
+                        <span className="readiness-val">{career_readiness.skill_coverage}%</span>
+                        <span className="readiness-sub">Target Match</span>
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Top Strengths Section - Distinct Green Accent Panel */}
             {strengths && strengths.length > 0 && (
@@ -188,7 +217,7 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
             )}
 
             {/* Batch Apply Sticky Action Banner */}
-            {acceptedRecs.length > 0 && (
+            {acceptedRecs && acceptedRecs.length > 0 && (
                 <div className="batch-apply-bar">
                     <div className="batch-info">
                         <span className="batch-count">✨ {acceptedRecs.length} Improvement(s) Selected</span>
@@ -210,7 +239,7 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
                             className={`filter-btn ${filterCategory === 'all' ? 'active' : ''}`}
                             onClick={() => setFilterCategory('all')}
                         >
-                            All ({recommendations.length})
+                            All ({recommendations ? recommendations.length : 0})
                         </button>
                         <button 
                             className={`filter-btn ${filterCategory === 'quick' ? 'active' : ''}`}
@@ -229,10 +258,10 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
 
                 <div className="recommendations-list">
                     {filteredRecommendations.map(rec => (
-                        <div key={rec.id} className={`rec-card priority-${rec.priority.toLowerCase()} status-${rec.status}`}>
+                        <div key={rec.id} className={`rec-card priority-${(rec.priority || 'medium').toLowerCase()} status-${rec.status || 'pending'}`}>
                             <div className="rec-card-header">
                                 <div className="rec-badge-group">
-                                    <span className={`priority-pill ${rec.priority.toLowerCase()}`}>{rec.priority}</span>
+                                    <span className={`priority-pill ${(rec.priority || 'medium').toLowerCase()}`}>{rec.priority || 'MEDIUM'}</span>
                                 </div>
                                 {rec.status === 'accepted' && <span className="status-tag accepted">✓ ACCEPTED</span>}
                                 {rec.status === 'rejected' && <span className="status-tag rejected">✕ DISMISSED</span>}
@@ -255,8 +284,8 @@ const ImprovementCoach = ({ resumeId, jobId, resumeData, onUpdateResumeData, onN
                                 </div>
                             )}
 
-                            {/* Action Buttons */}
-                            {rec.status === 'pending' && (
+                            {/* Action Buttons - Always rendered when not accepted or rejected */}
+                            {rec.status !== 'accepted' && rec.status !== 'rejected' && (
                                 <div className="rec-actions-bar">
                                     <button 
                                         className="btn-apply-rec" 
