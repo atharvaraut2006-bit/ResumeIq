@@ -204,24 +204,12 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
         <>
             <div className="opt-header-row">
                 <h2>RESUME OPTIMIZATION & ATS SIMULATION</h2>
-                <div className="mode-selector">
-                    <span>MODE: </span>
-                    {['conservative', 'balanced', 'aggressive'].map(m => (
-                        <button 
-                            key={m} 
-                            className={`btn-mode ${mode === m ? 'active' : ''}`}
-                            onClick={() => setMode(m)}
-                        >
-                            {m.toUpperCase()}
-                        </button>
-                    ))}
-                </div>
             </div>
             
             {/* Score Cards Row */}
             <div className="ats-scores-row">
                 <div className="ats-card match">
-                    <h4>PHASE 7 MATCH SCORE</h4>
+                    <h4>JOB MATCH SCORE</h4>
                     <div className="score-lg">{Math.round(scores?.match_score || 0)} / 100</div>
                     <div className="score-sub">Semantic Match</div>
                 </div>
@@ -240,10 +228,6 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                     <div className="score-lg green">+{Math.round(ats.potential_improvement || 0)}</div>
                     <div className="score-sub">Points Gain</div>
                 </div>
-            </div>
-
-            <div className="disclaimer-callout">
-                ℹ️ <strong>Confidence Metrics:</strong> Matching Confidence: {scores?.matching_confidence ?? 92}% | Recommendation Confidence: {scores?.recommendation_confidence ?? 88}%. <em>Scores reflect structural readability and semantic requirement coverage, NOT hiring probability predictions.</em>
             </div>
 
             {/* Section ATS Completeness Scores */}
