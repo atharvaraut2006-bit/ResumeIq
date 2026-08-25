@@ -347,11 +347,7 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                                 <div className="gap-grid">
                                     {allHighGaps.map((g, i) => (
                                         <div key={i} className="gap-item-card high-card">
-                                            <div className="gap-title">
-                                                <strong>{g.skill}</strong>
-                                            </div>
-                                            <div className="gap-reason"><strong>Reason:</strong> {g.reason}</div>
-                                            <div className="gap-action"><strong>Action:</strong> {g.action}</div>
+                                            <strong>{g.skill}</strong>
                                         </div>
                                     ))}
                                 </div>
@@ -365,11 +361,7 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                                 <div className="gap-grid">
                                     {allModerateGaps.map((g, i) => (
                                         <div key={i} className="gap-item-card moderate-card">
-                                            <div className="gap-title">
-                                                <strong>{g.skill}</strong>
-                                            </div>
-                                            <div className="gap-reason"><strong>Reason:</strong> {g.reason}</div>
-                                            {g.action && <div className="gap-action"><strong>Action:</strong> {g.action}</div>}
+                                            <strong>{g.skill}</strong>
                                         </div>
                                     ))}
                                 </div>
@@ -383,11 +375,7 @@ const OptimizationDashboard = ({ resumeId, jobMatchId, jobId, renderTopOnly, ren
                                 <div className="gap-grid">
                                     {allLowGaps.map((g, i) => (
                                         <div key={i} className="gap-item-card low-card">
-                                            <div className="gap-title">
-                                                <strong>{g.skill}</strong>
-                                            </div>
-                                            <div className="gap-reason"><strong>Reason:</strong> {g.reason}</div>
-                                            {g.action && <div className="gap-action"><strong>Action:</strong> {g.action}</div>}
+                                            <strong>{g.skill}</strong>
                                         </div>
                                     ))}
                                 </div>
